@@ -1,0 +1,9 @@
+[tool.black]
+line-length = 79
+skip-string-normalization = 1
+targer-version = ['py39']
+
+[tool.isort]
+py_version=39
+src_paths = ['api_foodgram', 'foodgram', 'users']
+profile = 'black'
