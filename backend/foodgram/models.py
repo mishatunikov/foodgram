@@ -1,15 +1,26 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from foodgram.consts import MAX_NAME_FIELD, MAX_SLUG_LENGTH
+from foodgram import consts
 
 User = get_user_model()
 
 
 class Tag(models):
-    name = models.CharField(max_length=MAX_NAME_FIELD, verbose_name='Название')
+    name = models.CharField(
+        max_length=consts.MAX_NAME_FIELD, verbose_name='Название'
+    )
     slug = models.SlugField(
-        max_length=MAX_SLUG_LENGTH, verbose_name='Идентификатор'
+        max_length=consts.MAX_SLUG_LENGTH, verbose_name='Идентификатор'
+    )
+
+
+class Ingredient(models):
+    name = models.CharField(
+        max_length=consts.MAX_SLUG_LENGTH, verbose_name='Название'
+    )
+    measure_unit = models.CharField(
+        max_length=consts.MEASURE_UNIT_LENGTH, verbose_name='Единица измерения'
     )
 
 
