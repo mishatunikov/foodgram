@@ -8,6 +8,8 @@ User = get_user_model()
 
 
 class BaseCreatedAt(models):
+    """Абстрактная модель. Наделяет наследников автоматически генерируемым полем created_at."""
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -16,6 +18,8 @@ class BaseCreatedAt(models):
 
 
 class BaseName(models):
+    """Абстрактная модель. Наделяет наследников полем name."""
+
     name = models.CharField(
         max_length=consts.MAX_NAME_FIELD, verbose_name='Название'
     )
@@ -26,6 +30,8 @@ class BaseName(models):
 
 
 class Tag(BaseName):
+    """Модель описывающая теги."""
+
     slug = models.SlugField(
         max_length=consts.MAX_SLUG_LENGTH,
         verbose_name='Идентификатор',
@@ -37,6 +43,8 @@ class Tag(BaseName):
 
 
 class Ingredient(BaseName):
+    """Модель описывающая ингредиенты."""
+
     measure_unit = models.CharField(
         max_length=consts.MEASURE_UNIT_LENGTH, verbose_name='Единица измерения'
     )
@@ -46,6 +54,8 @@ class Ingredient(BaseName):
 
 
 class RecipeIngredient(models):
+    """Промежуточная модель для связи отношением многие ко многим модели Recipe и Ingredient."""
+
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
@@ -60,6 +70,8 @@ class RecipeIngredient(models):
 
 
 class Recipe(BaseCreatedAt, BaseName):
+    """Модель описывающая рецепты"""
+
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(
         upload_to='recipes',
