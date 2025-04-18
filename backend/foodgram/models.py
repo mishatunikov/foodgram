@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import ManyToManyField
 
 from foodgram import consts
 
@@ -31,4 +32,20 @@ class RecipeIngredient(models):
 
 
 class Recipe(models):
-    pass
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(
+        max_length=consts.MAX_SLUG_LENGTH, verbose_name='Название'
+    )
+    image = models.ImageField(
+        upload_to='recipes',
+        default=None,
+        null=True,
+    )
+    description = models.TextField(verbose_name='Описание')
+    ingredients = ManyToManyField(
+        Ingredient, through=RecipeIngredient, verbose_name='Ингредиенты'
+    )
+    tags = ManyToManyField(Tag, verbose_name='Теги')
+    cooking_time = models.PositiveSmallIntegerField(
+        verbose_name='Время готовки'
+    )
