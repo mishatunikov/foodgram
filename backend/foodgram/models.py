@@ -105,3 +105,17 @@ class Favorite(BaseCreatedAt):
 
     class Meta(BaseCreatedAt.Meta):
         pass
+
+
+class Subscription(BaseCreatedAt):
+    """Модель описывающая связь пользователя с его подписчиками."""
+
+    user = models.ForeignKey(
+        User, related_name='subscribers', on_delete=models.CASCADE
+    )
+    subscriber = models.ForeignKey(
+        User, related_name='subscriptions', on_delete=models.CASCADE
+    )
+
+    class Meta(BaseCreatedAt.Meta):
+        pass
