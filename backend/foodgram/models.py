@@ -24,5 +24,11 @@ class Ingredient(models):
     )
 
 
+class RecipeIngredient(models):
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    count_ingredient = models.SmallIntegerField(verbose_name='Количество')
+    recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
+
+
 class Recipe(models):
     pass
