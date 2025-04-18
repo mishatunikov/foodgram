@@ -7,7 +7,7 @@ from foodgram import consts
 User = get_user_model()
 
 
-class BaseCreatedAt(models):
+class BaseCreatedAt(models.Model):
     """Абстрактная модель. Наделяет наследников автоматически генерируемым полем created_at."""
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -17,7 +17,7 @@ class BaseCreatedAt(models):
         ordering = ('-created_at',)
 
 
-class BaseName(models):
+class BaseName(models.Model):
     """Абстрактная модель. Наделяет наследников полем name."""
 
     name = models.CharField(
@@ -43,7 +43,7 @@ class Tag(BaseName):
         pass
 
 
-class Ingredient(models):
+class Ingredient(models.Model):
     """Модель описывающая ингредиенты."""
 
     name = models.CharField(
@@ -60,7 +60,7 @@ class Ingredient(models):
         pass
 
 
-class RecipeIngredient(models):
+class RecipeIngredient(models.Model):
     """Промежуточная модель для связи отношением многие ко многим модели Recipe и Ingredient."""
 
     ingredient = models.ForeignKey(
