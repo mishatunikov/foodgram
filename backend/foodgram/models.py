@@ -30,11 +30,17 @@ class Tag(BaseName):
         max_length=consts.MAX_SLUG_LENGTH, verbose_name='Идентификатор'
     )
 
+    class Meta(BaseName.Meta):
+        pass
+
 
 class Ingredient(BaseName):
     measure_unit = models.CharField(
         max_length=consts.MEASURE_UNIT_LENGTH, verbose_name='Единица измерения'
     )
+
+    class Meta(BaseName.Meta):
+        pass
 
 
 class RecipeIngredient(models):
