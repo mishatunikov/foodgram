@@ -27,7 +27,9 @@ class Ingredient(BaseName):
 
 class RecipeIngredient(models):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    count_ingredient = models.SmallIntegerField(verbose_name='Количество')
+    count_ingredient = models.PositiveSmallIntegerField(
+        verbose_name='Количество'
+    )
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
 
 
