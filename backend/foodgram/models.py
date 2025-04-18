@@ -51,7 +51,7 @@ class RecipeIngredient(models):
     )
 
 
-class Recipe(BaseName):
+class Recipe(BaseCreatedAt, BaseName):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(
         upload_to='recipes',
@@ -63,9 +63,11 @@ class Recipe(BaseName):
         Ingredient,
         through=RecipeIngredient,
         verbose_name='Ингредиенты',
-        related_name='recipes',
     )
-    tags = ManyToManyField(Tag, related_name='tags', verbose_name='Теги')
+    tags = ManyToManyField(Tag, verbose_name='Теги')
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время готовки'
     )
+
+    class Meta(BaseCreatedAt.Meta):
+        default_related_name = 'recipes'
