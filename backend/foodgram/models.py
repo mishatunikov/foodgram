@@ -35,6 +35,7 @@ class Tag(BaseName):
     slug = models.SlugField(
         max_length=consts.MAX_SLUG_LENGTH,
         verbose_name='Идентификатор',
+        unique=True,
         db_index=True,
     )
 
