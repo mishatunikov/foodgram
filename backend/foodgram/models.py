@@ -91,3 +91,17 @@ class Recipe(BaseCreatedAt, BaseName):
 
     class Meta(BaseCreatedAt.Meta):
         default_related_name = 'recipes'
+
+
+class Favorite(BaseCreatedAt):
+    """Модель описывающие связь избранных пользователем рецептов."""
+
+    user = models.ForeignKey(
+        User, related_name='favorites', on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        Recipe, related_name='users_favorite', on_delete=models.CASCADE
+    )
+
+    class Meta(BaseCreatedAt.Meta):
+        pass
