@@ -7,10 +7,22 @@ from foodgram import consts
 User = get_user_model()
 
 
+class BaseCreatedAt(models):
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+        ordering = ('-created_at',)
+
+
 class BaseName(models):
     name = models.CharField(
         max_length=consts.MAX_NAME_FIELD, verbose_name='Название'
     )
+
+    class Meta:
+        abstract = True
+        ordering = ('name',)
 
 
 class Tag(BaseName):
