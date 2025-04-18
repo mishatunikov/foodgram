@@ -7,19 +7,19 @@ from foodgram import consts
 User = get_user_model()
 
 
-class Tag(models):
+class BaseName(models):
     name = models.CharField(
         max_length=consts.MAX_NAME_FIELD, verbose_name='Название'
     )
+
+
+class Tag(BaseName):
     slug = models.SlugField(
         max_length=consts.MAX_SLUG_LENGTH, verbose_name='Идентификатор'
     )
 
 
-class Ingredient(models):
-    name = models.CharField(
-        max_length=consts.MAX_SLUG_LENGTH, verbose_name='Название'
-    )
+class Ingredient(BaseName):
     measure_unit = models.CharField(
         max_length=consts.MEASURE_UNIT_LENGTH, verbose_name='Единица измерения'
     )
@@ -31,11 +31,8 @@ class RecipeIngredient(models):
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
 
 
-class Recipe(models):
+class Recipe(BaseName):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(
-        max_length=consts.MAX_SLUG_LENGTH, verbose_name='Название'
-    )
     image = models.ImageField(
         upload_to='recipes',
         default=None,
