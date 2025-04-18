@@ -43,8 +43,14 @@ class Tag(BaseName):
         pass
 
 
-class Ingredient(BaseName):
+class Ingredient(models):
     """Модель описывающая ингредиенты."""
+
+    name = models.CharField(
+        max_length=consts.MAX_NAME_FIELD,
+        verbose_name='Название',
+        db_index=True,
+    )
 
     measure_unit = models.CharField(
         max_length=consts.MEASURE_UNIT_LENGTH, verbose_name='Единица измерения'
