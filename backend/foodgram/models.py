@@ -119,3 +119,17 @@ class Subscription(BaseCreatedAt):
 
     class Meta(BaseCreatedAt.Meta):
         pass
+
+
+class Purchase(BaseCreatedAt):
+    """Модель описывающая рецепты, добавленные пользователем в покупки."""
+
+    user = models.ForeignKey(
+        User, related_name='purchase_list', on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        Recipe, related_name='users_purchase', on_delete=models.CASCADE
+    )
+
+    class Meta(BaseCreatedAt.Meta):
+        pass
