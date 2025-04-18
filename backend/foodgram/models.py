@@ -26,11 +26,17 @@ class Ingredient(BaseName):
 
 
 class RecipeIngredient(models):
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+    )
     count_ingredient = models.PositiveSmallIntegerField(
         verbose_name='Количество'
     )
-    recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        'Recipe',
+        on_delete=models.CASCADE,
+    )
 
 
 class Recipe(BaseName):
@@ -42,7 +48,10 @@ class Recipe(BaseName):
     )
     description = models.TextField(verbose_name='Описание')
     ingredients = ManyToManyField(
-        Ingredient, through=RecipeIngredient, verbose_name='Ингредиенты'
+        Ingredient,
+        through=RecipeIngredient,
+        verbose_name='Ингредиенты',
+        related_name='recipes',
     )
     tags = ManyToManyField(Tag, related_name='tags', verbose_name='Теги')
     cooking_time = models.PositiveSmallIntegerField(
