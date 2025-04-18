@@ -44,7 +44,7 @@ class Recipe(BaseName):
     ingredients = ManyToManyField(
         Ingredient, through=RecipeIngredient, verbose_name='Ингредиенты'
     )
-    tags = ManyToManyField(Tag, verbose_name='Теги')
+    tags = ManyToManyField(Tag, related_name='tags', verbose_name='Теги')
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время готовки'
     )
