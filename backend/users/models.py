@@ -12,3 +12,4 @@ class CustomUser(AbstractUser):
     last_name = models.CharField(
         max_length=MAX_LENGTH_NAME, verbose_name='Фамилия'
     )
+    avatar = models.ImageField(upload_to='avatars', null=True, default=None)
