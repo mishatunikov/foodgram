@@ -18,3 +18,7 @@ class CustomUser(AbstractUser):
         'first_name',
         'last_name',
     ]
+
+    class Meta:
+        ordering = ('-date_joined',)
+
