@@ -4,3 +4,4 @@ django-debug-toolbar==3.8.1
 environs
 Pillow
 djoser
+django-cleanup
