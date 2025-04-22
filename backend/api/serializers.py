@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from api import consts
-from foodgram.models import User
+from foodgram.models import User, Tag
 
 
 class Base64ImageField(serializers.ImageField):
@@ -115,3 +115,11 @@ class PasswordSerializer(serializers.Serializer):
                 code=status.HTTP_400_BAD_REQUEST,
             )
         return attrs
+
+
+class TagSerializer(serializers.ModelSerializer):
+    """Сериализатор для работы с таблицей Tag."""
+
+    class Meta:
+        model = Tag
+        fields = '__all__'
