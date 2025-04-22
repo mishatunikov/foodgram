@@ -66,6 +66,13 @@ class UserSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         return super().validate(attrs)
 
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        instance = User(**validated_data)
+        instance.set_password(password)
+        instance.save()
+        return instance
+
 
 class AvatarSerializer(serializers.ModelSerializer):
     """Сериализатор для обработки аватара."""
