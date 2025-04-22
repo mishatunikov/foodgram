@@ -5,7 +5,7 @@ from users.consts import MAX_LENGTH_NAME
 
 
 class CustomUser(AbstractUser):
-    email = models.EmailField(verbose_name='Электронная почта')
+    email = models.EmailField(verbose_name='Электронная почта', unique=True)
     first_name = models.CharField(
         max_length=MAX_LENGTH_NAME, verbose_name='Имя'
     )
@@ -21,4 +21,3 @@ class CustomUser(AbstractUser):
 
     class Meta:
         ordering = ('-date_joined',)
-
