@@ -11,17 +11,20 @@ from rest_framework.permissions import IsAuthenticated
 
 from api import consts
 from api.paginators import LimitPageNumberPagination
-from foodgram.models import User
+from foodgram.models import User, Tag
 from api.serializers import (
     UserSerializer,
     AvatarSerializer,
     PasswordSerializer,
+    TagSerializer,
 )
 
 
 class UserViewSet(
     ListModelMixin, RetrieveModelMixin, CreateModelMixin, GenericViewSet
 ):
+    """Обработчик запросов на работу с пользователями."""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = LimitPageNumberPagination
@@ -80,3 +83,10 @@ class UserViewSet(
             data={'message': consts.PASSWORD_UPDATED},
             status=status.HTTP_201_CREATED,
         )
+
+
+class TagViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """Обработчик запросов к модели Tag."""
+
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
