@@ -124,6 +124,17 @@ class Subscription(BaseCreatedAt):
         User, related_name='subscribers', on_delete=models.CASCADE
     )
 
+    class Meta(BaseCreatedAt.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'following'], name='unique_user_following'
+            ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('following')),
+                name='not_follow_self',
+            ),
+        ]
+
 
 class Purchase(BaseCreatedAt):
     """Модель описывающая рецепты, добавленные пользователем в покупки."""
