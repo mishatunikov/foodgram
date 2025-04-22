@@ -141,3 +141,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,
 }
+
+LOGIN_FIELD = 'email'
+DJOSER = {'LOGIN_FIELD': 'email'}
+
+AUTHENTICATION_BACKENDS = [
+    'djoser.auth_backends.LoginFieldBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
