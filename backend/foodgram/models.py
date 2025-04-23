@@ -52,7 +52,7 @@ class Ingredient(models.Model):
         db_index=True,
     )
 
-    measure_unit = models.CharField(
+    measurement_unit = models.CharField(
         max_length=consts.MEASURE_UNIT_LENGTH, verbose_name='Единица измерения'
     )
 
