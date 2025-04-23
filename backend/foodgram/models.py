@@ -85,7 +85,7 @@ class Recipe(BaseCreatedAt, BaseName):
         default=None,
         null=True,
     )
-    description = models.TextField(verbose_name='Описание')
+    text = models.TextField(verbose_name='Описание')
     ingredients = ManyToManyField(
         Ingredient,
         through=RecipeIngredient,
