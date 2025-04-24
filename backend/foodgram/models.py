@@ -73,6 +73,9 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        default_related_name = 'recipe_ingredients'
+
 
 class Recipe(BaseCreatedAt, BaseName):
     """Модель описывающая рецепты"""
