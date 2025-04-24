@@ -80,8 +80,6 @@ class Recipe(BaseCreatedAt, BaseName):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(
         upload_to='recipes',
-        default=None,
-        null=True,
     )
     text = models.TextField(verbose_name='Описание')
     ingredients = ManyToManyField(
@@ -89,7 +87,7 @@ class Recipe(BaseCreatedAt, BaseName):
         through=RecipeIngredient,
         verbose_name='Ингредиенты',
     )
-    tags = ManyToManyField(Tag, verbose_name='Теги')
+    tags = ManyToManyField(Tag, verbose_name='Теги', related_name='recipes')
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время готовки'
     )
