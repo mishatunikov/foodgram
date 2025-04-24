@@ -1,7 +1,18 @@
+from django.contrib.auth.models import AnonymousUser
+from django.db import models
+from django.db.models import (
+    Prefetch,
+    OuterRef,
+    Subquery,
+    Case,
+    When,
+    Q,
+    Exists,
+)
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.mixins import (
     ListModelMixin,
     RetrieveModelMixin,
@@ -11,12 +22,20 @@ from rest_framework.permissions import IsAuthenticated
 
 from api import consts
 from api.paginators import LimitPageNumberPagination
-from foodgram.models import User, Tag
+from foodgram.models import (
+    User,
+    Tag,
+    Recipe,
+    Ingredient,
+    RecipeIngredient,
+    Subscription,
+)
 from api.serializers import (
     UserSerializer,
     AvatarSerializer,
     PasswordSerializer,
     TagSerializer,
+    RecipeReadSerializer,
 )
 
 
@@ -28,6 +47,19 @@ class UserViewSet(
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = LimitPageNumberPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = User.objects.all()
+
+        if not user.is_authenticated:
+            return queryset
+
+        else:
+            subscription = Subscription.objects.filter(
+                user=self.request.user, following=OuterRef('pk')
+            )
+            return queryset.annotate(is_subscribed=Exists(subscription))
 
     @action(
         methods=['get'],
@@ -90,3 +122,29 @@ class TagViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+
+# class RecipeViewSet(ModelViewSet):
+#     """Обработчик запросов к модели Recipe."""
+#
+#     queryset = Recipe.objects.all()
+#     serializer_class = RecipeReadSerializer
+#
+#     def perform_create(self, serializer):
+#         serializer.save(author=self.request.user)
+#
+#     def get_queryset(self):
+#         return (
+#             Recipe.objects.select_related('author')
+#             .prefetch_related(
+#                 Prefetch(
+#                     lookup='recipe_ingredients',
+#                     queryset=RecipeIngredient.objects.all().select_related(
+#                         'ingredient'
+#                     ),
+#                     to_attr='ingredient_amounts',
+#                 ),
+#                 'tags',
+#             )
+#             .annotate(is_subscribed=self.request.user.id)
+#         )
