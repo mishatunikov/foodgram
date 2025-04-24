@@ -5,9 +5,10 @@ from rest_framework import status
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.generics import get_object_or_404
 
 from api import consts
-from foodgram.models import User, Tag
+from foodgram.models import User, Tag, Recipe, Ingredient, RecipeIngredient
 
 
 class Base64ImageField(serializers.ImageField):
@@ -29,9 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         required=True, validators=[validate_password], write_only=True
     )
-    is_subscribed = serializers.SerializerMethodField(
-        default=False, read_only=True
-    )
+    is_subscribed = serializers.BooleanField(read_only=True, default=False)
 
     class Meta:
         model = User
@@ -46,9 +45,9 @@ class UserSerializer(serializers.ModelSerializer):
             'password',
         )
 
-    def get_is_subscribed(self, obj):
-        request = self.get_request()
-        return request.user in obj.subscribers.all()
+    # def get_is_subscribed(self, obj):
+    #     request = self.get_request()
+    #     return request.user in obj.subscribers_for_user
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -123,3 +122,40 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
+
+
+# class RecipeIngredientsSerializer(serializers.ModelSerializer):
+#
+#     id = serializers.IntegerField(required=True, source='ingredient.id')
+#     name = serializers.ReadOnlyField(source='ingredient.name')
+#     measurement_unit = serializers.ReadOnlyField(
+#         read_only=True, source='ingredient.measurement_unit'
+#     )
+#
+#     class Meta:
+#         model = RecipeIngredient
+#         fields = ('id', 'name', 'measurement_unit', 'amount')
+#
+#
+# class RecipeReadSerializer(serializers.ModelSerializer):
+#     """Сериализатор для модели Recipe."""
+#
+#     author = UserSerializer(read_only=True)
+#     tags = serializers.PrimaryKeyRelatedField(
+#         queryset=Tag.objects.all(), many=True, required=True
+#     )
+#     ingredients = RecipeIngredientsSerializer(
+#         many=True, source='ingredient_amounts', read_only=True
+#     )
+#
+#     class Meta:
+#         model = Recipe
+#         fields = (
+#             'author',
+#             'id',
+#             'ingredients',
+#             'tags',
+#             'name',
+#             'text',
+#             'cooking_time',
+#         )
