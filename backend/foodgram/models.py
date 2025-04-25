@@ -3,6 +3,9 @@ from django.contrib.auth import get_user_model
 from django.db.models import ManyToManyField
 
 from foodgram import consts
+from foodgram.consts import MAX_SHORT_LINK_ID_LENGTH
+from foodgram.utils import get_short_link_id, get_link
+from config import config
 
 User = get_user_model()
 
@@ -94,9 +97,27 @@ class Recipe(BaseCreatedAt, BaseName):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время готовки'
     )
+    short_link_id = models.CharField(
+        unique=True,
+        max_length=MAX_SHORT_LINK_ID_LENGTH,
+        blank=True,
+    )
 
     class Meta(BaseCreatedAt.Meta):
         default_related_name = 'recipes'
+
+    def save(self, *args, **kwargs):
+        self.short_link_id = get_short_link_id(Recipe)
+        super().save(*args, **kwargs)
+
+    @property
+    def get_short_url(self):
+        return get_link(
+            config.host.domain_name,
+            consts.SHORT_URL_ENDPOINT,
+            self.short_link_id,
+            https=False,
+        )
 
 
 class Favorite(BaseCreatedAt):
