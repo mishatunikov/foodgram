@@ -164,7 +164,7 @@ class RecipeIngredientsReadSerializer(serializers.ModelSerializer):
 class RecipeReadSerializer(RecipeSerializerMixin):
     """Сериализатор для модели Recipe."""
 
-    ingredients = RecipeIngredientsSerializer(
+    ingredients = RecipeIngredientsReadSerializer(
         many=True, source='ingredient_amounts', read_only=True
     )
     tags = serializers.SerializerMethodField()
