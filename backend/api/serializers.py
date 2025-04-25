@@ -147,7 +147,7 @@ class RecipeSerializerMixin(serializers.ModelSerializer):
         )
 
 
-class RecipeIngredientsSerializer(serializers.ModelSerializer):
+class RecipeIngredientsReadSerializer(serializers.ModelSerializer):
     """Сериализатор предоставления ответа с информацией об ингредиентах."""
 
     id = serializers.IntegerField(required=True, source='ingredient.id')
