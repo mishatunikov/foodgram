@@ -12,6 +12,14 @@ class DjangoSettings:
 
 
 @dataclass
+class HostSettings:
+    """Конфигурационные данные хоста."""
+
+    domain_name: str
+    host_ip: str
+
+
+@dataclass
 class PostgreSettings:
     """Конфигурационные данные для СУБД PostgreSQL."""
 
@@ -28,6 +36,7 @@ class Config:
 
     django_settings: DjangoSettings
     db: PostgreSettings
+    host: HostSettings
 
 
 def load_env() -> Config:
@@ -44,6 +53,10 @@ def load_env() -> Config:
             db_name=env.str('POSGRE_DB', 'postgres'),
             db_host=env.str('DB_HOST', ''),
             db_port=env.int('DB_PORT', 5432),
+        ),
+        HostSettings(
+            domain_name=env.str('DOMAIN_NAME', 'localhost'),
+            host_ip=env.str('HOST_IP', '127.0.0.1'),
         ),
     )
 
