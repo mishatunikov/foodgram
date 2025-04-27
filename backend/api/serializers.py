@@ -1,4 +1,6 @@
 import base64
+from re import fullmatch
+
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import MinValueValidator
@@ -7,10 +9,17 @@ from django.core.files.base import ContentFile
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
-from rest_framework.response import Response
+from rest_framework.validators import UniqueTogetherValidator
 
 from api import consts
-from foodgram.models import User, Tag, Recipe, Ingredient, RecipeIngredient
+from foodgram.models import (
+    User,
+    Tag,
+    Recipe,
+    Ingredient,
+    RecipeIngredient,
+    Subscription,
+)
 
 
 class Base64ImageField(serializers.ImageField):
@@ -26,12 +35,7 @@ class Base64ImageField(serializers.ImageField):
             return data
 
 
-class UserSerializer(serializers.ModelSerializer):
-    """Сериализатор модели Users."""
-
-    password = serializers.CharField(
-        required=True, validators=[validate_password], write_only=True
-    )
+class UserReadSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.BooleanField(read_only=True, default=False)
 
     class Meta:
@@ -44,22 +48,26 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'is_subscribed',
             'avatar',
-            'password',
         )
 
-    # def get_is_subscribed(self, obj):
-    #     request = self.get_request()
-    #     return request.user in obj.subscribers_for_user
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        request = self.get_request()
+class UserWriteSerializer(serializers.ModelSerializer):
+    """Сериализатор модели Users."""
 
-        if request.method == 'POST':
-            data.pop('avatar')
-            data.pop('is_subscribed')
+    password = serializers.CharField(
+        required=True, validators=[validate_password], write_only=True
+    )
 
-        return data
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'password',
+        )
 
     def get_request(self):
         return self.context.get('request')
@@ -73,6 +81,51 @@ class UserSerializer(serializers.ModelSerializer):
         instance.set_password(password)
         instance.save()
         return instance
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Subscription
+        fields = ('user', 'following')
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Subscription.objects.all(),
+                fields=('user', 'following'),
+            )
+        ]
+
+    def validate(self, attrs):
+        if attrs['user'] == attrs['following']:
+            raise ValidationError(detail=consts.NOT_FOLLOW_SELF)
+        return attrs
+
+
+class RecipeSimpleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class UserWithRecipeSerializer(UserReadSerializer):
+    # recipes = RecipeSimpleSerializer(many=True)
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.ReadOnlyField()
+
+    class Meta(UserReadSerializer.Meta):
+        fields = UserReadSerializer.Meta.fields + ('recipes', 'recipes_count')
+
+    def get_recipes(self, obj):
+        query_params = self.context.get('request').query_params
+        recipes_limit = query_params.get('recipes_limit')
+        if recipes_limit and fullmatch(
+            consts.RECIPES_LIMIT_PARAM_PATTERN, recipes_limit
+        ):
+            return RecipeSimpleSerializer(
+                obj.recipes.all()[: int(recipes_limit)], many=True
+            ).data
+        return RecipeSimpleSerializer(obj.recipes, many=True).data
 
 
 class AvatarSerializer(serializers.ModelSerializer):
@@ -129,7 +182,7 @@ class TagSerializer(serializers.ModelSerializer):
 class RecipeSerializerMixin(serializers.ModelSerializer):
     """Миксин с базовым набором для работы с моделью Recipe."""
 
-    author = UserSerializer(
+    author = UserReadSerializer(
         read_only=True,
     )
 
