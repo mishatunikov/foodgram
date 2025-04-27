@@ -12,6 +12,7 @@ from django.db.models import (
     Exists,
     Count,
 )
+from django.db.models.functions import Lower
 from rest_framework import status
 from rest_framework.decorators import action, permission_classes
 from rest_framework.exceptions import NotFound
@@ -25,6 +26,7 @@ from rest_framework.mixins import (
     DestroyModelMixin,
 )
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
+from rest_framework.filters import SearchFilter
 
 from api import consts
 from api.paginators import LimitPageNumberPagination
@@ -46,6 +48,7 @@ from api.serializers import (
     UserWithRecipeSerializer,
     UserReadSerializer,
     UserWriteSerializer,
+    IngredientsSerializer,
 )
 
 
@@ -274,3 +277,12 @@ class RecipeViewSet(ModelViewSet):
     def get_link(self, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
         return Response(data={'short_link': recipe.get_short_url})
+
+
+class IngredientViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """Обработчик запросов к данным об ингредиентах."""
+
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientsSerializer
+    filter_backends = (SearchFilter,)
+    search_fields = ('name',)
