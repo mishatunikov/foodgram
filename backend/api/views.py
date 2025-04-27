@@ -10,9 +10,11 @@ from django.db.models import (
     When,
     Q,
     Exists,
+    Count,
 )
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
@@ -20,6 +22,7 @@ from rest_framework.mixins import (
     ListModelMixin,
     RetrieveModelMixin,
     CreateModelMixin,
+    DestroyModelMixin,
 )
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 
@@ -34,12 +37,15 @@ from foodgram.models import (
     Subscription,
 )
 from api.serializers import (
-    UserSerializer,
     AvatarSerializer,
     PasswordSerializer,
     TagSerializer,
     RecipeReadSerializer,
     RecipeWriteSerializer,
+    SubscriptionSerializer,
+    UserWithRecipeSerializer,
+    UserReadSerializer,
+    UserWriteSerializer,
 )
 
 
@@ -48,8 +54,6 @@ class UserViewSet(
 ):
     """Обработчик запросов на работу с пользователями."""
 
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
     pagination_class = LimitPageNumberPagination
 
     def get_queryset(self):
@@ -63,7 +67,15 @@ class UserViewSet(
             subscription = Subscription.objects.filter(
                 user=self.request.user, following=OuterRef('pk')
             )
-            return queryset.annotate(is_subscribed=Exists(subscription))
+            return queryset.annotate(
+                is_subscribed=Exists(subscription),
+                recipes_count=Count('recipes'),
+            ).order_by('-date_joined')
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return UserReadSerializer
+        return UserWriteSerializer
 
     @action(
         methods=['get'],
@@ -84,7 +96,9 @@ class UserViewSet(
         serializer_class=AvatarSerializer,
     )
     def update_avatar(self, request):
-        serializer = self.get_serializer(request.user, data=request.data)
+        serializer = AvatarSerializer(
+            request.user, data=request.data, context={'request': request}
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -99,7 +113,7 @@ class UserViewSet(
         else:
             message = consts.AVATAR_NOT_INSTALLED
         return Response(
-            data={'message': message}, status=status.HTTP_404_NOT_FOUND
+            data={'message': message}, status=status.HTTP_204_NO_CONTENT
         )
 
     @action(
@@ -111,13 +125,82 @@ class UserViewSet(
     )
     def set_password(self, request):
         user: User = request.user
-        serializer = self.get_serializer(data=request.data)
+        serializer = PasswordSerializer(
+            data=request.data, context={'request': self.request}
+        )
         serializer.is_valid(raise_exception=True)
         user.set_password(serializer.validated_data.get('new_password'))
         user.save()
         return Response(
             data={'message': consts.PASSWORD_UPDATED},
             status=status.HTTP_201_CREATED,
+        )
+
+    @action(
+        methods=['get'],
+        permission_classes=[IsAuthenticated],
+        detail=False,
+        pagination_class=LimitPageNumberPagination,
+    )
+    def subscription(self, request):
+        user_subscriptions = (
+            self.get_queryset()
+            .prefetch_related()
+            .filter(is_subscribed=True)
+            .order_by('-subscribers__created_at')
+        )
+        page = self.paginate_queryset(queryset=user_subscriptions)
+        serializer = UserWithRecipeSerializer(
+            page, many=True, context={'request': request}
+        )
+        return self.get_paginated_response(serializer.data)
+
+    @action(
+        methods=['post'],
+        detail=True,
+        url_name='subscribe',
+        serializer_class=SubscriptionSerializer,
+        permission_classes=[
+            IsAuthenticated,
+        ],
+    )
+    def subscribe(self, request, pk):
+
+        if not User.objects.filter(id=pk).exists():
+            raise NotFound()
+
+        serializer = SubscriptionSerializer(
+            data={'user': request.user.id, 'following': pk},
+            context={'request': self.request},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        subscription_object = get_object_or_404(self.get_queryset(), id=pk)
+        return Response(
+            UserWithRecipeSerializer(
+                subscription_object, context=serializer.context
+            ).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @subscribe.mapping.delete
+    def delete_subscription(self, request, pk):
+        get_object_or_404(User, id=pk)
+
+        if not (
+            subscription := Subscription.objects.filter(
+                user=request.user.id, following=pk
+            )
+        ).exists():
+            return Response(
+                {'message': 'Нет подписки на данного пользователя'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        subscription.delete()
+        return Response(
+            data={'message': consts.SUBSCRIPTION_DELETED},
+            status=status.HTTP_204_NO_CONTENT,
         )
 
 
