@@ -102,6 +102,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
 
 class RecipeSimpleSerializer(serializers.ModelSerializer):
+    """Сериализатор для выдачи данных о рецептах в упрощенном виде."""
 
     class Meta:
         model = Recipe
@@ -109,7 +110,8 @@ class RecipeSimpleSerializer(serializers.ModelSerializer):
 
 
 class UserWithRecipeSerializer(UserReadSerializer):
-    # recipes = RecipeSimpleSerializer(many=True)
+    """Сериализатор выдачи данных о пользователях вместе со связанными с ними рецептами."""
+
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.ReadOnlyField()
 
@@ -198,6 +200,14 @@ class RecipeSerializerMixin(serializers.ModelSerializer):
             'text',
             'cooking_time',
         )
+
+
+class IngredientsSerializer(serializers.ModelSerializer):
+    """Сериализатор для работы с данными таблицы Ingredient"""
+
+    class Meta:
+        model = Ingredient
+        fields = ('id', 'name', 'measurement_unit')
 
 
 class RecipeIngredientsReadSerializer(serializers.ModelSerializer):
