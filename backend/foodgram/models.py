@@ -60,7 +60,7 @@ class Ingredient(models.Model):
     )
 
     class Meta(BaseName.Meta):
-        pass
+        ordering = ('id',)
 
 
 class RecipeIngredient(models.Model):
