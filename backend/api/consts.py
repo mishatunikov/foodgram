@@ -5,6 +5,8 @@ AVATAR_DELETED = 'Аватар успешно удален.'
 AVATAR_NOT_INSTALLED = 'В текущем профиле аватар не установлен.'
 PASSWORD_UPDATED = 'Пароль успешно обновлен.'
 SUBSCRIPTION_DELETED = 'Подписка успешно отменена.'
+FAVORITE_DELETE = 'Рецепт убран из избранного'
+RECIPE_IS_NOT_FAVORITE = 'Рецепт раннее не был добавлен в избранное.'
 
 # Validation error messages
 NEW_PASSWORD_IS_ALREADY_USED = 'Устанавливаемый пароль совпадает с текущем.'
