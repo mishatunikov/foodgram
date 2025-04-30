@@ -1,7 +1,5 @@
-from functools import lru_cache, partial
+from functools import lru_cache
 
-from django.contrib.auth.models import AnonymousUser
-from django.db import models
 from django.db.models import (
     Prefetch,
     OuterRef,
@@ -14,10 +12,11 @@ from django.db.models import (
 )
 from django.db.models.functions import Lower
 from rest_framework import status
-from rest_framework.decorators import action, permission_classes
+from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.mixins import (
     ListModelMixin,
@@ -37,6 +36,7 @@ from foodgram.models import (
     Ingredient,
     RecipeIngredient,
     Subscription,
+    Favorite,
 )
 from api.serializers import (
     AvatarSerializer,
@@ -49,6 +49,8 @@ from api.serializers import (
     UserReadSerializer,
     UserWriteSerializer,
     IngredientsSerializer,
+    RecipeSimpleSerializer,
+    FavoriteSerializer,
 )
 
 
@@ -277,6 +279,46 @@ class RecipeViewSet(ModelViewSet):
     def get_link(self, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
         return Response(data={'short_link': recipe.get_short_url})
+
+    @action(
+        detail=True,
+        methods=['post'],
+        url_name='favorite',
+        permission_classes=[
+            IsAuthenticated,
+        ],
+    )
+    def favorite(self, request, pk):
+        recipe = get_object_or_404(Recipe, id=pk)
+        serializer = FavoriteSerializer(
+            data={'user': request.user.pk, 'recipe': recipe.id},
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            RecipeSimpleSerializer(recipe).data, status=status.HTTP_201_CREATED
+        )
+
+    @favorite.mapping.delete
+    def delete_favorite(self, request, pk):
+        if not Recipe.objects.filter(pk=pk).exists():
+            raise NotFound()
+
+        if not (
+            favorite := Favorite.objects.filter(
+                user=request.user.id, recipe=pk
+            )
+        ).exists():
+            return Response(
+                {'message': consts.RECIPE_IS_NOT_FAVORITE},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        favorite.delete()
+        return Response(
+            data={'message': consts.SUBSCRIPTION_DELETED},
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class IngredientViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
