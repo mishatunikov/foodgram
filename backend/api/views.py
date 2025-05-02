@@ -37,6 +37,7 @@ from foodgram.models import (
     RecipeIngredient,
     Subscription,
     Favorite,
+    Purchase,
 )
 from api.serializers import (
     AvatarSerializer,
@@ -51,6 +52,7 @@ from api.serializers import (
     IngredientsSerializer,
     RecipeSimpleSerializer,
     FavoriteSerializer,
+    PurchaseSerializer,
 )
 
 
@@ -280,6 +282,46 @@ class RecipeViewSet(ModelViewSet):
         recipe = get_object_or_404(Recipe, id=pk)
         return Response(data={'short_link': recipe.get_short_url})
 
+    @staticmethod
+    def create_related_instance(serializer_class, pk, request):
+        instance = get_object_or_404(Recipe, id=pk)
+        serializer = serializer_class(
+            data={'user': request.user.pk, 'recipe': instance.id},
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            RecipeSimpleSerializer(instance).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @staticmethod
+    def delete_related_instance(
+        related_model,
+        pk,
+        request,
+        success_message=consts.DELETE_RELATED_INSTANCE,
+        exist_error_message=consts.RELATED_INSTANCE_NOT_EXIST,
+    ):
+        if not Recipe.objects.filter(pk=pk).exists():
+            raise NotFound()
+
+        if not (
+            related_instance := related_model.objects.filter(
+                user=request.user.id, recipe=pk
+            )
+        ).exists():
+            return Response(
+                {'message': exist_error_message},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        related_instance.delete()
+        return Response(
+            data={'message': success_message},
+            status=status.HTTP_204_NO_CONTENT,
+        )
+
     @action(
         detail=True,
         methods=['post'],
@@ -289,35 +331,36 @@ class RecipeViewSet(ModelViewSet):
         ],
     )
     def favorite(self, request, pk):
-        recipe = get_object_or_404(Recipe, id=pk)
-        serializer = FavoriteSerializer(
-            data={'user': request.user.pk, 'recipe': recipe.id},
-            context={'request': request},
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(
-            RecipeSimpleSerializer(recipe).data, status=status.HTTP_201_CREATED
+        return self.create_related_instance(
+            FavoriteSerializer, pk=pk, request=request
         )
 
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
-        if not Recipe.objects.filter(pk=pk).exists():
-            raise NotFound()
+        return self.delete_related_instance(
+            related_model=Favorite,
+            pk=pk,
+            success_message=consts.FAVORITE_DELETE,
+            exist_error_message=consts.RECIPE_IS_NOT_FAVORITE,
+            request=request,
+        )
 
-        if not (
-            favorite := Favorite.objects.filter(
-                user=request.user.id, recipe=pk
-            )
-        ).exists():
-            return Response(
-                {'message': consts.RECIPE_IS_NOT_FAVORITE},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        favorite.delete()
-        return Response(
-            data={'message': consts.SUBSCRIPTION_DELETED},
-            status=status.HTTP_204_NO_CONTENT,
+    @action(methods=['post'], detail=True, url_name='purchase')
+    def shopping_cart(self, request, pk):
+        return self.create_related_instance(
+            serializer_class=PurchaseSerializer,
+            pk=pk,
+            request=request,
+        )
+
+    @shopping_cart.mapping.delete
+    def delete_shopping_cart_recipe(self, request, pk):
+        return self.delete_related_instance(
+            related_model=Purchase,
+            pk=pk,
+            request=request,
+            success_message=consts.DELETE_SHOPPING_CART_RECIPE,
+            exist_error_message=consts.RECIPE_NOT_IN_SHOPPING_CART,
         )
 
 
