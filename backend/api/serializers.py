@@ -20,6 +20,7 @@ from foodgram.models import (
     RecipeIngredient,
     Subscription,
     Favorite,
+    Purchase,
 )
 
 
@@ -335,6 +336,20 @@ class FavoriteSerializer(serializers.ModelSerializer):
         validators = [
             UniqueTogetherValidator(
                 queryset=Favorite.objects.all(),
+                fields=('user', 'recipe'),
+            )
+        ]
+
+
+class PurchaseSerializer(serializers.ModelSerializer):
+    """Сериализатор для списка покупок пользователей."""
+
+    class Meta:
+        fields = ('user', 'recipe')
+        model = Purchase
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Purchase.objects.all(),
                 fields=('user', 'recipe'),
             )
         ]
