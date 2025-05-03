@@ -195,7 +195,7 @@ class RecipeSerializerMixin(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = (
+        fields = [
             'id',
             'tags',
             'author',
@@ -204,7 +204,7 @@ class RecipeSerializerMixin(serializers.ModelSerializer):
             'image',
             'text',
             'cooking_time',
-        )
+        ]
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
@@ -236,9 +236,14 @@ class RecipeReadSerializer(RecipeSerializerMixin):
         many=True, source='ingredient_amounts', read_only=True
     )
     tags = serializers.SerializerMethodField()
+    is_favorited = serializers.BooleanField(default=False)
+    is_in_shopping_cart = serializers.BooleanField(default=False)
 
     class Meta(RecipeSerializerMixin.Meta):
-        pass
+        fields = RecipeSerializerMixin.Meta.fields + [
+            'is_favorited',
+            'is_in_shopping_cart',
+        ]
 
     def get_tags(self, obj):
         if self.context.get('view').action == 'retrieve':
