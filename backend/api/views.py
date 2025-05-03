@@ -235,6 +235,7 @@ class RecipeViewSet(ModelViewSet):
     """Обработчик запросов к модели Recipe."""
 
     queryset = Recipe.objects.all()
+    pagination_class = LimitPageNumberPagination
 
     # Переопределение get_serializer_class плодит дополнительные запросы к БД.
     # Я не совсем понимаю почему так, есть догадки, что это связано с вложенными сериализаторами.
