@@ -6,3 +6,4 @@ Pillow
 djoser
 django-cleanup
 reportlab
+django-filter==23.1
