@@ -23,6 +23,9 @@ BASE64_IMAGE_ERROR = (
 
 # Patterns
 RECIPES_LIMIT_PARAM_PATTERN = r'[1-9]+\d*'
+BASE64_IMAGE_PATTERN = (
+    r'^data:image/(png|jpeg|jpg|gif|bmp|webp);base64,([A-Za-z0-9+/=\n\r]+)$'
+)
 
 # Auxiliary texts
 INGREDIENTS_FILE_HEADER = 'Список ингредиентов к покупке'
