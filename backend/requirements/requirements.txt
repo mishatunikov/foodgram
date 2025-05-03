@@ -5,3 +5,4 @@ environs
 Pillow
 djoser
 django-cleanup
+reportlab
