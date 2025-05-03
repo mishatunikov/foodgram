@@ -70,6 +70,12 @@ class UserViewSet(
 
     pagination_class = LimitPageNumberPagination
 
+    def get_permissions(self):
+        permissions = super().get_permissions()
+        if self.action == 'retrieve':
+            permissions.append(IsAuthenticated())
+        return permissions
+
     def get_queryset(self):
         user = self.request.user
         queryset = User.objects.all()
@@ -352,7 +358,14 @@ class RecipeViewSet(ModelViewSet):
             request=request,
         )
 
-    @action(methods=['post'], detail=True, url_name='purchase')
+    @action(
+        methods=['post'],
+        detail=True,
+        url_name='purchase',
+        permission_classes=[
+            IsAuthenticated,
+        ],
+    )
     def shopping_cart(self, request, pk):
         return self.create_related_instance(
             serializer_class=PurchaseSerializer,
@@ -370,7 +383,14 @@ class RecipeViewSet(ModelViewSet):
             exist_error_message=consts.RECIPE_NOT_IN_SHOPPING_CART,
         )
 
-    @action(methods=['get'], detail=False, url_name='download_shopping_cart')
+    @action(
+        methods=['get'],
+        detail=False,
+        url_name='download_shopping_cart',
+        permission_classes=[
+            IsAuthenticated,
+        ],
+    )
     def download_shopping_cart(self, request):
         user = request.user
         user_shopping_cart = user.purchase_list.all().values_list(
