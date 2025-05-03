@@ -18,5 +18,15 @@ NEW_PASSWORD_IS_ALREADY_USED = 'Устанавливаемый пароль с' 
 CURRENT_PASSWORD_IS_WRONG = 'Неверно указан текущий пароль.'
 NOT_FOLLOW_SELF = 'Подписаться на самого себя нельзя.'
 
-# PatternsСоздание actions для работы с избранным.
+# Patterns
 RECIPES_LIMIT_PARAM_PATTERN = r'[1-9]+\d*'
+
+# Auxiliary texts
+INGREDIENTS_FILE_HEADER = 'Список ингредиентов к покупке'
+
+# PDF generation consts
+LEFT_MARGIN = 100
+TOP_MARGIN = 50
+BOTTOM = 50
+LEADING = 25
+MARGIN_AFTER_HEADER = 30
