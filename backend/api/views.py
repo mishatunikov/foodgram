@@ -1,3 +1,4 @@
+import io
 from functools import lru_cache
 
 from django.db.models import (
@@ -11,6 +12,11 @@ from django.db.models import (
     Count,
 )
 from django.db.models.functions import Lower
+from django.http import FileResponse
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
@@ -29,6 +35,7 @@ from rest_framework.filters import SearchFilter
 
 from api import consts
 from api.paginators import LimitPageNumberPagination
+from api.utils import create_pdf
 from foodgram.models import (
     User,
     Tag,
@@ -361,6 +368,53 @@ class RecipeViewSet(ModelViewSet):
             request=request,
             success_message=consts.DELETE_SHOPPING_CART_RECIPE,
             exist_error_message=consts.RECIPE_NOT_IN_SHOPPING_CART,
+        )
+
+    @action(methods=['get'], detail=False, url_name='download_shopping_cart')
+    def download_shopping_cart(self, request):
+        user = request.user
+        user_shopping_cart = user.purchase_list.all().values_list(
+            'recipe_id', flat=True
+        )
+        queryset = self.get_queryset().filter(id__in=[*user_shopping_cart])
+        ingredients = {}
+
+        for recipe in queryset:
+            for ingredients_amount in recipe.ingredient_amounts:
+                ingredient = ingredients.get(
+                    ingredients_amount.ingredient.name,
+                )
+                if ingredient:
+                    ingredient['amount'] += ingredients_amount.amount
+
+                else:
+                    ingredients[ingredients_amount.ingredient.name] = {
+                        'measurement_unit': ingredients_amount.ingredient.measurement_unit,
+                        'amount': ingredients_amount.amount,
+                    }
+
+        sorted_ingredients = sorted(
+            ingredients.items(),
+            reverse=True,
+            key=lambda x: x[1]['amount'],
+        )
+        list_for_file = [
+            f'• {ing[0]} ({ing[1]["measurement_unit"]}) - {ing[1]["amount"]}'
+            for ing in sorted_ingredients
+        ]
+        buffer = io.BytesIO()
+        create_pdf(
+            data=list_for_file,
+            filename=buffer,
+            header=consts.INGREDIENTS_FILE_HEADER,
+        )
+        buffer.seek(0)
+
+        return FileResponse(
+            buffer,
+            as_attachment=True,
+            filename='ingredients.pdf',
+            content_type='application/pdf',
         )
 
 
