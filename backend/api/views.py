@@ -4,10 +4,6 @@ from functools import lru_cache
 from django.db.models import (
     Prefetch,
     OuterRef,
-    Subquery,
-    Case,
-    When,
-    Q,
     Exists,
     Count,
 )
@@ -32,6 +28,7 @@ from rest_framework.mixins import (
 )
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api import consts
 from api.paginators import LimitPageNumberPagination
@@ -236,6 +233,8 @@ class RecipeViewSet(ModelViewSet):
 
     queryset = Recipe.objects.all()
     pagination_class = LimitPageNumberPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = ...
 
     # Переопределение get_serializer_class плодит дополнительные запросы к БД.
     # Я не совсем понимаю почему так, есть догадки, что это связано с вложенными сериализаторами.
@@ -251,16 +250,32 @@ class RecipeViewSet(ModelViewSet):
         serializer.save(author=self.request.user)
 
     def get_queryset(self):
-        return Recipe.objects.prefetch_related(
-            Prefetch(
-                lookup='recipe_ingredients',
-                queryset=RecipeIngredient.objects.all().select_related(
-                    'ingredient'
+
+        return (
+            Recipe.objects.prefetch_related(
+                Prefetch(
+                    lookup='recipe_ingredients',
+                    queryset=RecipeIngredient.objects.all().select_related(
+                        'ingredient'
+                    ),
+                    to_attr='ingredient_amounts',
                 ),
-                to_attr='ingredient_amounts',
-            ),
-            'tags',
-        ).select_related('author')
+                'tags',
+            )
+            .select_related('author')
+            .annotate(
+                is_favorited=Exists(
+                    Favorite.objects.filter(
+                        user=self.request.user, recipe=OuterRef('pk')
+                    ),
+                ),
+                is_in_shopping_cart=Exists(
+                    Purchase.objects.filter(
+                        user=self.request.user, recipe=OuterRef('pk')
+                    )
+                ),
+            )
+        )
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
