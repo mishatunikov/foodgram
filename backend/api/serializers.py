@@ -246,11 +246,7 @@ class RecipeReadSerializer(RecipeSerializerMixin):
         ]
 
     def get_tags(self, obj):
-        if self.context.get('view').action == 'retrieve':
-            return TagSerializer(
-                obj.tags.all(), read_only=True, many=True
-            ).data
-        return [tag.id for tag in obj.tags.all()]
+        return TagSerializer(obj.tags.all(), read_only=True, many=True).data
 
 
 class RecipeIngredientWriteSerializer(serializers.Serializer):
