@@ -20,6 +20,9 @@ BASE64_IMAGE_ERROR = (
     'Ошибка передаваемого значения. Строка должна соответствовать BASE64.'
 )
 INGREDIENTS_REQUIRED = 'В рецепте не указан ни один ингредиент.'
+RECIPE_INGREDIENTS_DUPLICATED = (
+    'В рецепте не могут быть указаны повторяющиеся ингредиенты.'
+)
 
 # Patterns
 RECIPES_LIMIT_PARAM_PATTERN = r'[1-9]+\d*'
