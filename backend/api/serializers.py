@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator
 from rest_framework import status
 from django.core.files.base import ContentFile
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -264,11 +264,12 @@ class RecipeIngredientWriteSerializer(serializers.Serializer):
         ],
     )
 
-    def validate_id(self, input_id):
-        ingredient = Ingredient.objects.filter(id=input_id)
-        if ingredient.exists():
-            return input_id
-        raise ValidationError(detail='Ингредиент с указанным id не найден.')
+    # def validate_id(self, input_id):
+    #     ingredient = Ingredient.objects.filter(id=input_id)
+    #     if ingredient.exists():
+    #         return input_id
+    #     raise NotFound()
+    # raise ValidationError(detail='Ингредиент с указанным id не найден.')
 
 
 class RecipeWriteSerializer(RecipeSerializerMixin):
@@ -286,6 +287,8 @@ class RecipeWriteSerializer(RecipeSerializerMixin):
         pass
 
     def validate_ingredients(self, data):
+        if not data:
+            raise ValidationError(detail=consts.INGREDIENTS_REQUIRED)
         serializer = RecipeIngredientWriteSerializer(data=data, many=True)
         serializer.is_valid(raise_exception=True)
         return serializer.validated_data
