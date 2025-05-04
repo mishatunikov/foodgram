@@ -1,4 +1,5 @@
 from django_filters.rest_framework import FilterSet, filters
+from rest_framework.filters import SearchFilter
 
 from foodgram.models import Recipe
 
@@ -31,3 +32,7 @@ class RecipeFilterSet(FilterSet):
         if user and user.is_authenticated and value:
             return queryset.filter(users_purchase__user=user)
         return queryset
+
+
+class SearchNameFilter(SearchFilter):
+    search_param = 'name'
