@@ -284,8 +284,16 @@ class RecipeWriteSerializer(RecipeSerializerMixin):
     def validate_ingredients(self, data):
         if not data:
             raise ValidationError(detail=consts.INGREDIENTS_REQUIRED)
+
         serializer = RecipeIngredientWriteSerializer(data=data, many=True)
         serializer.is_valid(raise_exception=True)
+
+        ingredients_id = [
+            ingredient.get('id') for ingredient in serializer.validated_data
+        ]
+        if len(ingredients_id) != len(set(ingredients_id)):
+            raise ValidationError(detail=consts.RECIPE_INGREDIENTS_DUPLICATED)
+
         return serializer.validated_data
 
     def create(self, validated_data):
