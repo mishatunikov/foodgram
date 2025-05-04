@@ -296,6 +296,13 @@ class RecipeWriteSerializer(RecipeSerializerMixin):
 
         return serializer.validated_data
 
+    def validate_tags(self, data):
+        if not data:
+            raise ValidationError(detail=consts.TAGS_REQUIRED)
+        if len(set(data)) != len(data):
+            raise ValidationError(detail=consts.RECIPE_TAGS_DUPLICATED)
+        return data
+
     def create(self, validated_data):
         tags = validated_data.pop('tags')
 
