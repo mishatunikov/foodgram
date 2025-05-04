@@ -165,7 +165,7 @@ class UserViewSet(
         detail=False,
         pagination_class=LimitPageNumberPagination,
     )
-    def subscription(self, request):
+    def subscriptions(self, request):
         user_subscriptions = (
             self.get_queryset()
             .prefetch_related()
