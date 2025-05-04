@@ -25,6 +25,7 @@ RECIPE_INGREDIENTS_DUPLICATED = (
     'В рецепте не могут быть указаны повторяющиеся ингредиенты.'
 )
 RECIPE_TAGS_DUPLICATED = 'В рецепте не могут быть указаны повторяющиеся теги.'
+RECIPE_UPDATE_REQUIRED_FIELDS = 'Не указаны обязательные поля'
 
 # Patterns
 RECIPES_LIMIT_PARAM_PATTERN = r'[1-9]+\d*'
@@ -41,3 +42,12 @@ TOP_MARGIN = 50
 BOTTOM = 50
 LEADING = 25
 MARGIN_AFTER_HEADER = 30
+
+# Fields
+RECIPE_REQUIRED_UPDATE_FIELD = [
+    'ingredients',
+    'tags',
+    'name',
+    'text',
+    'cooking_time',
+]
