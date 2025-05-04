@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models import ManyToManyField
@@ -95,7 +96,7 @@ class Recipe(BaseCreatedAt, BaseName):
     )
     tags = ManyToManyField(Tag, verbose_name='Теги', related_name='recipes')
     cooking_time = models.PositiveSmallIntegerField(
-        verbose_name='Время готовки'
+        verbose_name='Время готовки', validators=[MinValueValidator(1)]
     )
     short_link_id = models.CharField(
         unique=True,
