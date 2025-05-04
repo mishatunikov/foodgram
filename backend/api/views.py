@@ -26,13 +26,18 @@ from rest_framework.mixins import (
     CreateModelMixin,
     DestroyModelMixin,
 )
-from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import (
+    IsAuthenticated,
+    SAFE_METHODS,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
 from api import consts
 from api.filters import RecipeFilterSet
 from api.paginators import LimitPageNumberPagination
+from api.permissions import IsAdminOrOwnerOrReadOnly
 from api.utils import create_pdf
 from foodgram.models import (
     User,
@@ -236,6 +241,7 @@ class RecipeViewSet(ModelViewSet):
     pagination_class = LimitPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilterSet
+    permission_classes = (IsAdminOrOwnerOrReadOnly,)
 
     # Переопределение get_serializer_class плодит дополнительные запросы к БД.
     # Я не совсем понимаю почему так, есть догадки, что это связано с вложенными сериализаторами.
