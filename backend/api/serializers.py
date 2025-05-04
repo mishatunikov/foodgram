@@ -303,6 +303,18 @@ class RecipeWriteSerializer(RecipeSerializerMixin):
             raise ValidationError(detail=consts.RECIPE_TAGS_DUPLICATED)
         return data
 
+    def validate(self, attrs):
+        if self.context.get('request').method == 'PATCH':
+            requirement_fields = set(consts.RECIPE_REQUIRED_UPDATE_FIELD)
+            provided_fields = set(attrs.keys())
+            missing_fields = requirement_fields - provided_fields
+
+            if missing_fields:
+                raise ValidationError(
+                    detail=f'{consts.RECIPE_UPDATE_REQUIRED_FIELDS}: {", ".join(missing_fields)}'
+                )
+        return attrs
+
     def create(self, validated_data):
         tags = validated_data.pop('tags')
 
