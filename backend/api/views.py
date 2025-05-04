@@ -314,7 +314,7 @@ class RecipeViewSet(ModelViewSet):
     )
     def get_link(self, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
-        return Response(data={'short_link': recipe.get_short_url})
+        return Response(data={'short-link': recipe.get_short_url})
 
     @staticmethod
     def create_related_instance(serializer_class, pk, request):
