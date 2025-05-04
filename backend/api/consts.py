@@ -20,9 +20,11 @@ BASE64_IMAGE_ERROR = (
     'Ошибка передаваемого значения. Строка должна соответствовать BASE64.'
 )
 INGREDIENTS_REQUIRED = 'В рецепте не указан ни один ингредиент.'
+TAGS_REQUIRED = 'В рецепте не указан ни один тег.'
 RECIPE_INGREDIENTS_DUPLICATED = (
     'В рецепте не могут быть указаны повторяющиеся ингредиенты.'
 )
+RECIPE_TAGS_DUPLICATED = 'В рецепте не могут быть указаны повторяющиеся теги.'
 
 # Patterns
 RECIPES_LIMIT_PARAM_PATTERN = r'[1-9]+\d*'
