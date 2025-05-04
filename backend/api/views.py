@@ -73,11 +73,11 @@ class UserViewSet(
 
     pagination_class = LimitPageNumberPagination
 
-    def get_permissions(self):
-        permissions = super().get_permissions()
-        if self.action == 'retrieve':
-            permissions.append(IsAuthenticated())
-        return permissions
+    # def get_permissions(self):
+    #     permissions = super().get_permissions()
+    #     if self.action == 'create':
+    #         permissions.append(IsAuthenticated())
+    #     return permissions
 
     def get_queryset(self):
         user = self.request.user
@@ -156,7 +156,7 @@ class UserViewSet(
         user.save()
         return Response(
             data={'message': consts.PASSWORD_UPDATED},
-            status=status.HTTP_201_CREATED,
+            status=status.HTTP_204_NO_CONTENT,
         )
 
     @action(
