@@ -204,7 +204,7 @@ class UserViewSet(
             UserWithRecipeSerializer(
                 subscription_object, context=serializer.context
             ).data,
-            status=status.HTTP_200_OK,
+            status=status.HTTP_201_CREATED,
         )
 
     @subscribe.mapping.delete
