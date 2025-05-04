@@ -260,12 +260,11 @@ class RecipeIngredientWriteSerializer(serializers.Serializer):
         ],
     )
 
-    # def validate_id(self, input_id):
-    #     ingredient = Ingredient.objects.filter(id=input_id)
-    #     if ingredient.exists():
-    #         return input_id
-    #     raise NotFound()
-    # raise ValidationError(detail='Ингредиент с указанным id не найден.')
+    def validate_id(self, input_id):
+        ingredient = Ingredient.objects.filter(id=input_id)
+        if ingredient.exists():
+            return input_id
+        raise ValidationError(detail='Ингредиент с указанным id не найден.')
 
 
 class RecipeWriteSerializer(RecipeSerializerMixin):
