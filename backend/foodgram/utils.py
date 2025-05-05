@@ -49,4 +49,4 @@ def get_link(*args, https: bool = True) -> str:
     """
 
     startswith = consts.HTTPS_STARTSWITH if https else consts.HTTP_STARTSWITH
-    return startswith + '/'.join(args)
+    return f'{startswith}{"/".join(args)}/'
