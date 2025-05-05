@@ -1,6 +1,7 @@
 from django.db.models import Case, When, Value, IntegerField
+from django.db.models.functions import Lower
 from django_filters.rest_framework import FilterSet, filters
-from rest_framework.filters import SearchFilter, BaseFilterBackend
+from rest_framework.filters import SearchFilter
 
 from foodgram.models import Recipe
 
@@ -40,15 +41,39 @@ class DoubleSearchName(SearchFilter):
 
     def filter_queryset(self, request, queryset, view):
         name = request.query_params.get(self.search_param)
-
-        return (
-            queryset.filter(name__icontains=name)
-            .annotate(
-                priority=Case(
-                    When(name__istartswith=name, then=Value(0)),
-                    default=Value(1),
-                    output_field=IntegerField(),
+        if name:
+            queryset = (
+                queryset.annotate(lower_name=Lower('name'))
+                .filter(lower_name__icontains=name.lower())
+                .annotate(
+                    priority=Case(
+                        When(
+                            lower_name__istartswith=name.lower(), then=Value(0)
+                        ),
+                        default=Value(1),
+                        output_field=IntegerField(),
+                    )
                 )
+                .order_by('priority', 'name')
             )
-            .order_by('priority', 'name')
-        )
+        return queryset
+
+
+# class DoubleSearchName(SearchFilter):
+#     search_param = 'name'
+#
+#     def filter_queryset(self, request, queryset, view):
+#         name = request.query_params.get(self.search_param)
+#         if name:
+#             queryset = (
+#                 queryset.filter(name__icontains=name.lower())
+#                 .annotate(
+#                     priority=Case(
+#                         When(name__istartswith=name, then=Value(0)),
+#                         default=Value(1),
+#                         output_field=IntegerField(),
+#                     )
+#                 )
+#                 .order_by('priority', 'name')
+#             )
+#         return queryset
