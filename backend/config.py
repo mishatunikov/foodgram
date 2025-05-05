@@ -48,9 +48,9 @@ def load_env() -> Config:
             debug=env.bool('DEBUG'),
         ),
         PostgreSettings(
-            db_user=env.str('POSTGRE_USER', 'postgres'),
-            db_password=env.str('POSTGRE_PASSWORD', ''),
-            db_name=env.str('POSGRE_DB', 'postgres'),
+            db_user=env.str('POSTGRES_USER', 'postgres'),
+            db_password=env.str('POSTGRES_PASSWORD', ''),
+            db_name=env.str('POSGRES_DB', 'postgres'),
             db_host=env.str('DB_HOST', ''),
             db_port=env.int('DB_PORT', 5432),
         ),
