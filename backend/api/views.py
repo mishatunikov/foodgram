@@ -35,7 +35,7 @@ from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
 from api import consts
-from api.filters import RecipeFilterSet, SearchNameFilter
+from api.filters import RecipeFilterSet, SearchNameFilter, DoubleSearchName
 from api.paginators import LimitPageNumberPagination
 from api.permissions import IsAdminOrOwnerOrReadOnly
 from api.utils import create_pdf
@@ -464,5 +464,5 @@ class IngredientViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientsSerializer
-    filter_backends = (SearchNameFilter,)
-    search_fields = ('^name',)
+    filter_backends = (DoubleSearchName,)
+    search_fields = ('name',)
