@@ -1,5 +1,6 @@
+from django.db.models import Case, When, Value, IntegerField
 from django_filters.rest_framework import FilterSet, filters
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, BaseFilterBackend
 
 from foodgram.models import Recipe
 
@@ -34,5 +35,20 @@ class RecipeFilterSet(FilterSet):
         return queryset
 
 
-class SearchNameFilter(SearchFilter):
+class DoubleSearchName(SearchFilter):
     search_param = 'name'
+
+    def filter_queryset(self, request, queryset, view):
+        name = request.query_params.get(self.search_param)
+
+        return (
+            queryset.filter(name__icontains=name)
+            .annotate(
+                priority=Case(
+                    When(name__istartswith=name, then=Value(0)),
+                    default=Value(1),
+                    output_field=IntegerField(),
+                )
+            )
+            .order_by('priority', 'name')
+        )
