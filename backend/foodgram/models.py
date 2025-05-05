@@ -44,7 +44,8 @@ class Tag(BaseName):
     )
 
     class Meta(BaseName.Meta):
-        pass
+        verbose_name = 'тег'
+        verbose_name_plural = 'Теги'
 
 
 class Ingredient(models.Model):
@@ -62,6 +63,8 @@ class Ingredient(models.Model):
 
     class Meta(BaseName.Meta):
         ordering = ('id',)
+        verbose_name = 'ингредиент'
+        verbose_name_plural = 'Ингредиенты'
 
 
 class RecipeIngredient(models.Model):
@@ -106,6 +109,8 @@ class Recipe(BaseCreatedAt, BaseName):
 
     class Meta(BaseCreatedAt.Meta):
         default_related_name = 'recipes'
+        verbose_name = 'рецепт'
+        verbose_name_plural = 'Рецепты'
 
     def save(self, *args, **kwargs):
         self.short_link_id = get_short_link_id(Recipe)
@@ -137,6 +142,8 @@ class Favorite(BaseCreatedAt):
                 fields=['user', 'recipe'], name='unique_user_favorite'
             ),
         ]
+        verbose_name = 'избранный рецепт'
+        verbose_name_plural = 'избранные рецепты'
 
 
 class Subscription(BaseCreatedAt):
@@ -159,6 +166,8 @@ class Subscription(BaseCreatedAt):
                 name='not_follow_self',
             ),
         ]
+        verbose_name = 'подписка'
+        verbose_name_plural = 'Подписки'
 
 
 class Purchase(BaseCreatedAt):
@@ -178,3 +187,5 @@ class Purchase(BaseCreatedAt):
                 name='unique_user_shopping_cart_recipe',
             ),
         ]
+        verbose_name = 'корзина покупок'
+        verbose_name_plural = 'корзины покупок'
