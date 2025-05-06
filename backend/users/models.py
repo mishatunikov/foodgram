@@ -12,7 +12,9 @@ class CustomUser(AbstractUser):
     last_name = models.CharField(
         max_length=MAX_LENGTH_NAME, verbose_name='Фамилия'
     )
-    avatar = models.ImageField(upload_to='avatars', null=True, default=None)
+    avatar = models.ImageField(
+        upload_to='avatars', null=True, default=None, blank=True
+    )
     REQUIRED_FIELDS = [
         'email',
         'first_name',
@@ -21,3 +23,5 @@ class CustomUser(AbstractUser):
 
     class Meta:
         ordering = ('-date_joined',)
+        verbose_name = 'пользователь'
+        verbose_name_plural = 'Пользователи'
