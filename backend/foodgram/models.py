@@ -21,7 +21,14 @@ class BaseCreatedAt(models.Model):
         ordering = ('-created_at',)
 
 
-class BaseName(models.Model):
+class NameAsStrMixin:
+    """Миксин для формирования строкового представления в виде атрибута name"""
+
+    def __str__(self):
+        return self.name
+
+
+class BaseName(NameAsStrMixin, models.Model):
     """Абстрактная модель. Наделяет наследников полем name."""
 
     name = models.CharField(
@@ -48,7 +55,7 @@ class Tag(BaseName):
         verbose_name_plural = 'Теги'
 
 
-class Ingredient(models.Model):
+class Ingredient(NameAsStrMixin, models.Model):
     """Модель описывающая ингредиенты."""
 
     name = models.CharField(
@@ -71,8 +78,7 @@ class RecipeIngredient(models.Model):
     """Промежуточная модель для связи отношением многие ко многим модели Recipe и Ingredient."""
 
     ingredient = models.ForeignKey(
-        Ingredient,
-        on_delete=models.CASCADE,
+        Ingredient, on_delete=models.CASCADE, verbose_name='ингредиент'
     )
     amount = models.PositiveSmallIntegerField(verbose_name='Количество')
     recipe = models.ForeignKey(
@@ -82,15 +88,17 @@ class RecipeIngredient(models.Model):
 
     class Meta:
         default_related_name = 'recipe_ingredients'
+        verbose_name = 'ингредиент рецепта'
+        verbose_name_plural = 'Ингредиенты рецепта'
 
 
 class Recipe(BaseCreatedAt, BaseName):
     """Модель описывающая рецепты"""
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    image = models.ImageField(
-        upload_to='recipes',
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name='автор'
     )
+    image = models.ImageField(upload_to='recipes', verbose_name='изображение')
     text = models.TextField(verbose_name='Описание')
     ingredients = ManyToManyField(
         Ingredient,
@@ -105,6 +113,8 @@ class Recipe(BaseCreatedAt, BaseName):
         unique=True,
         max_length=MAX_SHORT_LINK_ID_LENGTH,
         blank=True,
+        verbose_name='id короткой ссылки',
+        help_text='генерируется автоматически',
     )
 
     class Meta(BaseCreatedAt.Meta):
@@ -130,10 +140,16 @@ class Favorite(BaseCreatedAt):
     """Модель описывающие связь избранных пользователем рецептов."""
 
     user = models.ForeignKey(
-        User, related_name='favorites', on_delete=models.CASCADE
+        User,
+        related_name='favorites',
+        on_delete=models.CASCADE,
+        verbose_name='владелец избранного',
     )
     recipe = models.ForeignKey(
-        Recipe, related_name='users_favorite', on_delete=models.CASCADE
+        Recipe,
+        related_name='users_favorite',
+        on_delete=models.CASCADE,
+        verbose_name='избранный рецепт',
     )
 
     class Meta(BaseCreatedAt.Meta):
@@ -142,18 +158,27 @@ class Favorite(BaseCreatedAt):
                 fields=['user', 'recipe'], name='unique_user_favorite'
             ),
         ]
-        verbose_name = 'избранный рецепт'
-        verbose_name_plural = 'избранные рецепты'
+        verbose_name = 'понравившийся рецепт'
+        verbose_name_plural = 'Избранное'
+
+    def __str__(self):
+        return self.recipe.name
 
 
 class Subscription(BaseCreatedAt):
     """Модель описывающая связь пользователя с его подписчиками."""
 
     user = models.ForeignKey(
-        User, related_name='subscriptions', on_delete=models.CASCADE
+        User,
+        related_name='subscriptions',
+        on_delete=models.CASCADE,
+        verbose_name='пользователь',
     )
     following = models.ForeignKey(
-        User, related_name='subscribers', on_delete=models.CASCADE
+        User,
+        related_name='subscribers',
+        on_delete=models.CASCADE,
+        verbose_name='подписка',
     )
 
     class Meta(BaseCreatedAt.Meta):
@@ -169,15 +194,26 @@ class Subscription(BaseCreatedAt):
         verbose_name = 'подписка'
         verbose_name_plural = 'Подписки'
 
+    def __str__(self):
+        return consts.SUBSCRIPTION_STR(
+            self.user.username, self.following.username
+        )
+
 
 class Purchase(BaseCreatedAt):
     """Модель описывающая рецепты, добавленные пользователем в покупки."""
 
     user = models.ForeignKey(
-        User, related_name='purchase_list', on_delete=models.CASCADE
+        User,
+        related_name='purchase_list',
+        on_delete=models.CASCADE,
+        verbose_name='владелец корзины покупок',
     )
     recipe = models.ForeignKey(
-        Recipe, related_name='users_purchase', on_delete=models.CASCADE
+        Recipe,
+        related_name='users_purchase',
+        on_delete=models.CASCADE,
+        verbose_name='рецепт в корзине покупок',
     )
 
     class Meta(BaseCreatedAt.Meta):
@@ -189,3 +225,6 @@ class Purchase(BaseCreatedAt):
         ]
         verbose_name = 'корзина покупок'
         verbose_name_plural = 'корзины покупок'
+
+    def __str__(self):
+        return self.recipe.name
