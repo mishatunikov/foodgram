@@ -35,7 +35,7 @@ from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
 from api import consts
-from api.filters import RecipeFilterSet, SearchNameFilter, DoubleSearchName
+from api.filters import RecipeFilterSet, DoubleSearchName
 from api.paginators import LimitPageNumberPagination
 from api.permissions import IsAdminOrOwnerOrReadOnly
 from api.utils import create_pdf

@@ -57,23 +57,3 @@ class DoubleSearchName(SearchFilter):
                 .order_by('priority', 'name')
             )
         return queryset
-
-
-# class DoubleSearchName(SearchFilter):
-#     search_param = 'name'
-#
-#     def filter_queryset(self, request, queryset, view):
-#         name = request.query_params.get(self.search_param)
-#         if name:
-#             queryset = (
-#                 queryset.filter(name__icontains=name.lower())
-#                 .annotate(
-#                     priority=Case(
-#                         When(name__istartswith=name, then=Value(0)),
-#                         default=Value(1),
-#                         output_field=IntegerField(),
-#                     )
-#                 )
-#                 .order_by('priority', 'name')
-#             )
-#         return queryset
