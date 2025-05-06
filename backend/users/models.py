@@ -1,19 +1,25 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from users.consts import MAX_LENGTH_NAME
+from users import consts
 
 
 class CustomUser(AbstractUser):
-    email = models.EmailField(verbose_name='Электронная почта', unique=True)
+    email = models.EmailField(verbose_name='электронная почта', unique=True)
     first_name = models.CharField(
-        max_length=MAX_LENGTH_NAME, verbose_name='Имя'
+        max_length=consts.MAX_LENGTH_NAME,
+        verbose_name='имя',
     )
     last_name = models.CharField(
-        max_length=MAX_LENGTH_NAME, verbose_name='Фамилия'
+        max_length=consts.MAX_LENGTH_NAME,
+        verbose_name='фамилия',
     )
     avatar = models.ImageField(
-        upload_to='avatars', null=True, default=None, blank=True
+        upload_to='avatars',
+        null=True,
+        default=None,
+        blank=True,
+        verbose_name='аватар',
     )
     REQUIRED_FIELDS = [
         'email',
