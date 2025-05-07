@@ -12,7 +12,10 @@ User = get_user_model()
 
 
 class BaseCreatedAt(models.Model):
-    """Абстрактная модель. Наделяет наследников автоматически генерируемым полем created_at."""
+    """
+    Абстрактная модель. Наделяет наследников автоматически генерируемым полем
+    created_at.
+    """
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -75,7 +78,10 @@ class Ingredient(NameAsStrMixin, models.Model):
 
 
 class RecipeIngredient(models.Model):
-    """Промежуточная модель для связи отношением многие ко многим модели Recipe и Ingredient."""
+    """
+    Промежуточная модель для связи отношением многие ко многим модели Recipe
+    и Ingredient.
+    """
 
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.CASCADE, verbose_name='ингредиент'

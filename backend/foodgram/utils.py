@@ -10,7 +10,8 @@ def generate_identifier(max_length: Optional[int] = None) -> str:
     """
     Генерирует идентификатор.
 
-    :param max_length: Длина идентификатора. По умолчанию ограничено 32 символами.
+    :param max_length: Длина идентификатора. По умолчанию ограничено 32
+    символами.
     :return: Идентификатор
     """
 
@@ -23,7 +24,8 @@ def get_short_link_id(model: Model, field_name: str = 'short_link_id') -> str:
     Генерирует id для короткого url объекта переданной модели.
 
     :param model: Модель, для которой должен быть сгенерирован идентификатор.
-    :param field_name: Название поля модели, хранящий идентификатор. По умолчанию - 'short_link_id'.
+    :param field_name: Название поля модели, хранящий идентификатор.
+    По умолчанию - 'short_link_id'.
     :return: Уникальный идентификатор для короткой ссылки
     """
     short_identifiers = model.objects.values_list(field_name, flat=True)
@@ -44,7 +46,8 @@ def get_link(*args, https: bool = True) -> str:
     Генерирует ссылки исходя из входных данных.
 
     :param args: Составляющие URL, разделенные /.
-    :param https: Булево значение. Если установлен False, ссылка будет формата http.
+    :param https: Булево значение. Если установлен False,
+    ссылка будет формата http.
     :return: URL адрес
     """
 

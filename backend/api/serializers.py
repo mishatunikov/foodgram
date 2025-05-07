@@ -6,7 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator
 from rest_framework import serializers, status
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -34,7 +34,8 @@ class Base64ImageField(serializers.ImageField):
         format_img, imgstr = data.split(';base64,')
         return ContentFile(
             base64.b64decode(imgstr),
-            name=f'{self.context.get("request").user.username}.{format_img.split("/")[-1]}',
+            name=f'{self.context.get("request").user.username}.'
+            f'{format_img.split("/")[-1]}',
         )
 
 
@@ -113,7 +114,10 @@ class RecipeSimpleSerializer(serializers.ModelSerializer):
 
 
 class UserWithRecipeSerializer(UserReadSerializer):
-    """Сериализатор выдачи данных о пользователях вместе со связанными с ними рецептами."""
+    """
+    Сериализатор выдачи данных о пользователях вместе со связанными
+    с ними рецептами.
+    """
 
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.ReadOnlyField()
@@ -266,7 +270,9 @@ class RecipeIngredientWriteSerializer(serializers.Serializer):
 
 
 class RecipeWriteSerializer(RecipeSerializerMixin):
-    """Сериализатор для создания новых и редактирования уже созданных рецептов."""
+    """
+    Сериализатор для создания новых и редактирования уже созданных рецептов.
+    """
 
     ingredients = RecipeIngredientWriteSerializer(
         required=True, many=True, write_only=True
@@ -309,7 +315,8 @@ class RecipeWriteSerializer(RecipeSerializerMixin):
 
             if missing_fields:
                 raise ValidationError(
-                    detail=f'{consts.RECIPE_UPDATE_REQUIRED_FIELDS}: {", ".join(missing_fields)}'
+                    detail=f'{consts.RECIPE_UPDATE_REQUIRED_FIELDS}: '
+                    f'{", ".join(missing_fields)}'
                 )
         return attrs
 

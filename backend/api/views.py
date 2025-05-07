@@ -1,5 +1,4 @@
 import io
-from functools import lru_cache
 
 from api import consts
 from api.filters import DoubleSearchName, RecipeFilterSet
@@ -21,37 +20,20 @@ from api.serializers import (
     UserWriteSerializer,
 )
 from api.utils import create_pdf
-from django.db.models import (
-    Count,
-    Exists,
-    OuterRef,
-    Prefetch,
-)
-from django.db.models.functions import Lower
+from django.db.models import Count, Exists, OuterRef, Prefetch
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
-from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.mixins import (
     CreateModelMixin,
-    DestroyModelMixin,
     ListModelMixin,
     RetrieveModelMixin,
 )
-from rest_framework.permissions import (
-    SAFE_METHODS,
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-)
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from foodgram.models import (
@@ -72,12 +54,6 @@ class UserViewSet(
     """Обработчик запросов на работу с пользователями."""
 
     pagination_class = LimitPageNumberPagination
-
-    # def get_permissions(self):
-    #     permissions = super().get_permissions()
-    #     if self.action == 'create':
-    #         permissions.append(IsAuthenticated())
-    #     return permissions
 
     def get_queryset(self):
         user = self.request.user
@@ -243,10 +219,6 @@ class RecipeViewSet(ModelViewSet):
     filterset_class = RecipeFilterSet
     permission_classes = (IsAdminOrOwnerOrReadOnly,)
 
-    # Переопределение get_serializer_class плодит дополнительные запросы к БД.
-    # Я не совсем понимаю почему так, есть догадки, что это связано с вложенными сериализаторами.
-    # А если кэшировать, то дополнительных запросов не будет. Был бы рад пояснению, почему так и как лучше.
-    @lru_cache()
     def get_serializer_class(self):
 
         if self.request.method in SAFE_METHODS:
@@ -430,7 +402,9 @@ class RecipeViewSet(ModelViewSet):
 
                 else:
                     ingredients[ingredients_amount.ingredient.name] = {
-                        'measurement_unit': ingredients_amount.ingredient.measurement_unit,
+                        'measurement_unit': (
+                            ingredients_amount.ingredient.measurement_unit
+                        ),
                         'amount': ingredients_amount.amount,
                     }
 
