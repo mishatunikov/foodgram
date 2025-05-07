@@ -191,9 +191,10 @@ class TagSerializer(serializers.ModelSerializer):
 class RecipeSerializerMixin(serializers.ModelSerializer):
     """Миксин с базовым набором для работы с моделью Recipe."""
 
-    author = UserReadSerializer(
-        read_only=True,
-    )
+    # author = UserReadSerializer(
+    #     read_only=True,
+    # )
+    author = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Recipe
@@ -207,6 +208,14 @@ class RecipeSerializerMixin(serializers.ModelSerializer):
             'text',
             'cooking_time',
         ]
+
+    def get_author(self, obj):
+        is_subscribed = Subscription.objects.filter(
+            user=self.context.get('request').user, following=obj.author
+        ).exists()
+        serializer_data = UserReadSerializer(obj.author).data
+        serializer_data.update({'is_subscribed': is_subscribed})
+        return serializer_data
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
