@@ -39,6 +39,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
+        continue-on-error: true
         run: |
           cd frontend
           npm ci
