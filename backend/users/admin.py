@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from foodgram.models import Favorite, Purchase, Subscription, Recipe
+from foodgram.models import Favorite, Purchase, Recipe, Subscription
 from users.models import CustomUser
 
 

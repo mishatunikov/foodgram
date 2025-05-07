@@ -1,4 +1,4 @@
-from django.db.models import Case, When, Value, IntegerField
+from django.db.models import Case, IntegerField, Value, When
 from django.db.models.functions import Lower
 from django_filters.rest_framework import FilterSet, filters
 from rest_framework.filters import SearchFilter

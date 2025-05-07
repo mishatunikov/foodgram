@@ -1,14 +1,35 @@
 import io
 from functools import lru_cache
 
+from api import consts
+from api.filters import DoubleSearchName, RecipeFilterSet
+from api.paginators import LimitPageNumberPagination
+from api.permissions import IsAdminOrOwnerOrReadOnly
+from api.serializers import (
+    AvatarSerializer,
+    FavoriteSerializer,
+    IngredientsSerializer,
+    PasswordSerializer,
+    PurchaseSerializer,
+    RecipeReadSerializer,
+    RecipeSimpleSerializer,
+    RecipeWriteSerializer,
+    SubscriptionSerializer,
+    TagSerializer,
+    UserReadSerializer,
+    UserWithRecipeSerializer,
+    UserWriteSerializer,
+)
+from api.utils import create_pdf
 from django.db.models import (
-    Prefetch,
-    OuterRef,
-    Exists,
     Count,
+    Exists,
+    OuterRef,
+    Prefetch,
 )
 from django.db.models.functions import Lower
 from django.http import FileResponse
+from django_filters.rest_framework import DjangoFilterBackend
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -16,53 +37,32 @@ from reportlab.pdfgen import canvas
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
+from rest_framework.mixins import (
+    CreateModelMixin,
+    DestroyModelMixin,
+    ListModelMixin,
+    RetrieveModelMixin,
+)
+from rest_framework.permissions import (
+    SAFE_METHODS,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
-from rest_framework.mixins import (
-    ListModelMixin,
-    RetrieveModelMixin,
-    CreateModelMixin,
-    DestroyModelMixin,
-)
-from rest_framework.permissions import (
-    IsAuthenticated,
-    SAFE_METHODS,
-    IsAuthenticatedOrReadOnly,
-)
-from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
 
-from api import consts
-from api.filters import RecipeFilterSet, DoubleSearchName
-from api.paginators import LimitPageNumberPagination
-from api.permissions import IsAdminOrOwnerOrReadOnly
-from api.utils import create_pdf
 from foodgram.models import (
-    User,
-    Tag,
-    Recipe,
+    Favorite,
     Ingredient,
+    Purchase,
+    Recipe,
     RecipeIngredient,
     Subscription,
-    Favorite,
-    Purchase,
-)
-from api.serializers import (
-    AvatarSerializer,
-    PasswordSerializer,
-    TagSerializer,
-    RecipeReadSerializer,
-    RecipeWriteSerializer,
-    SubscriptionSerializer,
-    UserWithRecipeSerializer,
-    UserReadSerializer,
-    UserWriteSerializer,
-    IngredientsSerializer,
-    RecipeSimpleSerializer,
-    FavoriteSerializer,
-    PurchaseSerializer,
+    Tag,
+    User,
 )
 
 

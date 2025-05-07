@@ -1,26 +1,24 @@
 import base64
 from re import fullmatch
 
-
+from api import consts
 from django.contrib.auth.password_validation import validate_password
-from django.core.validators import MinValueValidator
-from rest_framework import status
 from django.core.files.base import ContentFile
-from rest_framework import serializers
-from rest_framework.exceptions import ValidationError, NotFound
+from django.core.validators import MinValueValidator
+from rest_framework import serializers, status
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueTogetherValidator
 
-from api import consts
 from foodgram.models import (
-    User,
-    Tag,
-    Recipe,
+    Favorite,
     Ingredient,
+    Purchase,
+    Recipe,
     RecipeIngredient,
     Subscription,
-    Favorite,
-    Purchase,
+    Tag,
+    User,
 )
 
 

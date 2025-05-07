@@ -1,12 +1,12 @@
+from config import config
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.db.models import ManyToManyField
 
 from foodgram import consts
 from foodgram.consts import MAX_SHORT_LINK_ID_LENGTH
-from foodgram.utils import get_short_link_id, get_link
-from config import config
+from foodgram.utils import get_link, get_short_link_id
 
 User = get_user_model()
 

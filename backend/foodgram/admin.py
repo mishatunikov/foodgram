@@ -2,16 +2,15 @@ from django.contrib import admin
 from django.db.models import Count, F, Value
 from django.db.models.functions import Concat
 
-from foodgram.models import (
-    Tag,
-    Recipe,
-    Ingredient,
-    Favorite,
-    Purchase,
-    Subscription,
-)
-
 from foodgram import consts
+from foodgram.models import (
+    Favorite,
+    Ingredient,
+    Purchase,
+    Recipe,
+    Subscription,
+    Tag,
+)
 
 
 class IngredientRecipeInlineMixin(admin.TabularInline):
