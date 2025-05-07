@@ -1,9 +1,16 @@
 [tool.black]
 line-length = 79
 skip-string-normalization = 1
-targer-version = ['py39']
+target-version = ['py39']
 
 [tool.isort]
-py_version=39
+py_version = 39
 src_paths = ['api_foodgram', 'foodgram', 'users']
 profile = 'black'
+skip = ['migrations']
+line_length=79
+
+[tools.flake8]
+ignore =['W503', 'F811']
+exclude =['tests/', '*/migrations/', 'venv/', '*/venv/', 'env/', '*/env/', ]
+per-file-ignores =['*/settings.py:E501']
