@@ -18,7 +18,11 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
 )
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet, ModelViewSet
+from rest_framework.viewsets import (
+    GenericViewSet,
+    ModelViewSet,
+    ReadOnlyModelViewSet,
+)
 
 from api import consts
 from api.filters import DoubleSearchName, RecipeFilterSet
@@ -204,7 +208,7 @@ class UserViewSet(
         )
 
 
-class TagViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+class TagViewSet(ReadOnlyModelViewSet):
     """Обработчик запросов к модели Tag."""
 
     queryset = Tag.objects.all()
