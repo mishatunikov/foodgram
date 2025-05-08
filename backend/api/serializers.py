@@ -227,7 +227,7 @@ class RecipeReadSerializer(RecipeSerializerMixin):
     ingredients = RecipeIngredientsReadSerializer(
         many=True, source='ingredient_amounts', read_only=True
     )
-    tags = serializers.SerializerMethodField()
+    tags = TagSerializer(read_only=True, many=True)
     is_favorited = serializers.BooleanField(default=False)
     is_in_shopping_cart = serializers.BooleanField(default=False)
 
@@ -236,9 +236,6 @@ class RecipeReadSerializer(RecipeSerializerMixin):
             'is_favorited',
             'is_in_shopping_cart',
         ]
-
-    def get_tags(self, obj):
-        return TagSerializer(obj.tags.all(), read_only=True, many=True).data
 
 
 class RecipeIngredientWriteSerializer(serializers.Serializer):
