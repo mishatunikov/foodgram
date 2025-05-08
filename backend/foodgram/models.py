@@ -24,14 +24,7 @@ class BaseCreatedAt(models.Model):
         ordering = ('-created_at',)
 
 
-class NameAsStrMixin:
-    """Миксин для формирования строкового представления в виде атрибута name"""
-
-    def __str__(self):
-        return self.name
-
-
-class BaseName(NameAsStrMixin, models.Model):
+class BaseName(models.Model):
     """Абстрактная модель. Наделяет наследников полем name."""
 
     name = models.CharField(
@@ -41,6 +34,9 @@ class BaseName(NameAsStrMixin, models.Model):
     class Meta:
         abstract = True
         ordering = ('name',)
+
+    def __str__(self):
+        return self.name
 
 
 class Tag(BaseName):
@@ -58,7 +54,7 @@ class Tag(BaseName):
         verbose_name_plural = 'Теги'
 
 
-class Ingredient(NameAsStrMixin, models.Model):
+class Ingredient(models.Model):
     """Модель описывающая ингредиенты."""
 
     name = models.CharField(
