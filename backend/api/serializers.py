@@ -3,7 +3,7 @@ from re import fullmatch
 from api import consts
 from api.fields import Base64ImageField
 from django.contrib.auth.password_validation import validate_password
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -245,7 +245,8 @@ class RecipeIngredientWriteSerializer(serializers.Serializer):
     amount = serializers.IntegerField(
         required=True,
         validators=[
-            MinValueValidator(1),
+            MinValueValidator(consts.MIN_AMOUNT),
+            MaxValueValidator(consts.MAX_AMOUNT),
         ],
     )
 
