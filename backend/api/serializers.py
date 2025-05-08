@@ -1,6 +1,7 @@
 from re import fullmatch
 
 from api import consts
+from api.fields import Base64ImageField
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import MinValueValidator
 from rest_framework import serializers, status
@@ -18,8 +19,6 @@ from foodgram.models import (
     Tag,
     User,
 )
-
-from api.fields import Base64ImageField
 
 
 class UserReadSerializer(serializers.ModelSerializer):

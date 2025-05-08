@@ -1,11 +1,10 @@
 import base64
 from re import fullmatch
 
-from django.core.files.base import ContentFile
-from rest_framework.exceptions import ValidationError
-from rest_framework import serializers
-
 from api import consts
+from django.core.files.base import ContentFile
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
 class Base64ImageField(serializers.ImageField):
