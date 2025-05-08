@@ -333,16 +333,16 @@ class RecipeWriteSerializer(RecipeSerializerMixin):
     def create_recipe_ingredients_relation(
         recipe: Recipe, ingredients_data: dict
     ):
-        for ingredient_data in ingredients_data:
-            ingredient = get_object_or_404(
-                Ingredient, id=ingredient_data.get('id')
-            )
-
-            RecipeIngredient.objects.create(
-                ingredient=ingredient,
-                recipe=recipe,
-                amount=ingredient_data['amount'],
-            )
+        RecipeIngredient.objects.bulk_create(
+            [
+                RecipeIngredient(
+                    ingredient_id=ingredient_data.get('id'),
+                    recipe=recipe,
+                    amount=ingredient_data['amount'],
+                )
+                for ingredient_data in ingredients_data
+            ]
+        )
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
