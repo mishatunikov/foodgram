@@ -8,12 +8,10 @@ AVATAR_DELETED = 'Аватар успешно удален.'
 AVATAR_NOT_INSTALLED = 'В текущем профиле аватар не установлен.'
 PASSWORD_UPDATED = 'Пароль успешно обновлен.'
 SUBSCRIPTION_DELETED = 'Подписка успешно отменена.'
-FAVORITE_DELETE = 'Рецепт убран из избранного'
 RECIPE_IS_NOT_FAVORITE = 'Рецепт раннее не был добавлен в избранное.'
-DELETE_SHOPPING_CART_RECIPE = 'Рецепт убрал из списка покупок.'
 RECIPE_NOT_IN_SHOPPING_CART = 'Рецепт ранее не был добавлен в список покупок.'
-DELETE_RELATED_INSTANCE = 'Удаление выполнено.'
 RELATED_INSTANCE_NOT_EXIST = 'Связанный объект не существует.'
+NO_SUBSCRIPTION = 'Нет подписки на данного пользователя'
 
 # Validation error messages
 NEW_PASSWORD_IS_ALREADY_USED = 'Устанавливаемый пароль с' 'овпадает с текущем.'
