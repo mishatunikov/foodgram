@@ -1,4 +1,5 @@
 MAX_LENGTH_PASSWORD = 128
+DEFAULT_PAGE_SIZE = 6
 
 # Response messages
 AVATAR_DELETED = 'Аватар успешно удален.'
