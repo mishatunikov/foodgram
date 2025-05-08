@@ -1,25 +1,5 @@
 import io
 
-from api import consts
-from api.filters import DoubleSearchName, RecipeFilterSet
-from api.paginators import LimitPageNumberPagination
-from api.permissions import IsAuthorOrReadOnly
-from api.serializers import (
-    AvatarSerializer,
-    FavoriteSerializer,
-    IngredientsSerializer,
-    PasswordSerializer,
-    PurchaseSerializer,
-    RecipeReadSerializer,
-    RecipeSimpleSerializer,
-    RecipeWriteSerializer,
-    SubscriptionSerializer,
-    TagSerializer,
-    UserReadSerializer,
-    UserWithRecipeSerializer,
-    UserWriteSerializer,
-)
-from api.utils import create_pdf
 from django.db.models import Count, Exists, OuterRef, Prefetch
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
@@ -40,6 +20,26 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
+from api import consts
+from api.filters import DoubleSearchName, RecipeFilterSet
+from api.paginators import LimitPageNumberPagination
+from api.permissions import IsAuthorOrReadOnly
+from api.serializers import (
+    AvatarSerializer,
+    FavoriteSerializer,
+    IngredientsSerializer,
+    PasswordSerializer,
+    PurchaseSerializer,
+    RecipeReadSerializer,
+    RecipeSimpleSerializer,
+    RecipeWriteSerializer,
+    SubscriptionSerializer,
+    TagSerializer,
+    UserReadSerializer,
+    UserWithRecipeSerializer,
+    UserWriteSerializer,
+)
+from api.utils import create_pdf
 from foodgram.models import (
     Favorite,
     Ingredient,

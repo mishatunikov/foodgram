@@ -1,14 +1,13 @@
 from re import fullmatch
 
-from api import consts
-from api.fields import Base64ImageField
 from django.contrib.auth.password_validation import validate_password
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
-from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueTogetherValidator
 
+from api import consts
+from api.fields import Base64ImageField
 from foodgram.models import (
     Favorite,
     Ingredient,
