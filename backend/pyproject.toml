@@ -5,7 +5,7 @@ target-version = ['py39']
 
 [tool.isort]
 py_version = 39
-src_paths = ['api_foodgram', 'foodgram', 'users']
+src_paths = ['api_foodgram', 'foodgram', 'users', 'api']
 profile = 'black'
 skip = ['migrations']
 line_length=79
