@@ -3,11 +3,15 @@ from django.db.models.functions import Lower
 from django_filters.rest_framework import FilterSet, filters
 from rest_framework.filters import SearchFilter
 
-from foodgram.models import Recipe
+from foodgram.models import Recipe, Tag
 
 
 class RecipeFilterSet(FilterSet):
-    tags = filters.CharFilter(method='filter_tags')
+    tags = filters.ModelMultipleChoiceFilter(
+        field_name='tags__slug',
+        queryset=Tag.objects.all(),
+        to_field_name='slug',
+    )
     is_favorited = filters.BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = filters.BooleanFilter(
         method='filter_is_in_shopping_cart'
@@ -15,13 +19,12 @@ class RecipeFilterSet(FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ['author', 'tags', 'is_favorited', 'is_in_shopping_cart']
-
-    def filter_tags(self, queryset, name, value):
-        tag_list = self.request.query_params.getlist('tags')
-        if tag_list:
-            return queryset.filter(tags__slug__in=tag_list).distinct()
-        return queryset
+        fields = (
+            'author',
+            'tags',
+            'is_favorited',
+            'is_in_shopping_cart',
+        )
 
     def filter_is_favorited(self, queryset, name, value):
         user = getattr(self.request, 'user', None)
