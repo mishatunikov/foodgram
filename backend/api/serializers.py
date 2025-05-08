@@ -277,16 +277,11 @@ class RecipeWriteSerializer(RecipeSerializerMixin):
         if not data:
             raise ValidationError(detail=consts.INGREDIENTS_REQUIRED)
 
-        serializer = RecipeIngredientWriteSerializer(data=data, many=True)
-        serializer.is_valid(raise_exception=True)
-
-        ingredients_id = [
-            ingredient.get('id') for ingredient in serializer.validated_data
-        ]
+        ingredients_id = [ingredient.get('id') for ingredient in data]
         if len(ingredients_id) != len(set(ingredients_id)):
             raise ValidationError(detail=consts.RECIPE_INGREDIENTS_DUPLICATED)
 
-        return serializer.validated_data
+        return data
 
     def validate_tags(self, data):
         if not data:
