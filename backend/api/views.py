@@ -3,7 +3,7 @@ import io
 from api import consts
 from api.filters import DoubleSearchName, RecipeFilterSet
 from api.paginators import LimitPageNumberPagination
-from api.permissions import IsAdminOrOwnerOrReadOnly
+from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (
     AvatarSerializer,
     FavoriteSerializer,
@@ -32,7 +32,11 @@ from rest_framework.mixins import (
     ListModelMixin,
     RetrieveModelMixin,
 )
-from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.permissions import (
+    SAFE_METHODS,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
@@ -217,7 +221,7 @@ class RecipeViewSet(ModelViewSet):
     pagination_class = LimitPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilterSet
-    permission_classes = (IsAdminOrOwnerOrReadOnly,)
+    permission_classes = (IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly)
 
     def get_serializer_class(self):
 
