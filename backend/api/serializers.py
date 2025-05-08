@@ -210,11 +210,13 @@ class RecipeSerializerMixin(serializers.ModelSerializer):
         ]
 
     def get_author(self, obj):
-        is_subscribed = Subscription.objects.filter(
-            user=self.context.get('request').user, following=obj.author
-        ).exists()
+        user = self.context.get('request').user
         serializer_data = UserReadSerializer(obj.author).data
-        serializer_data.update({'is_subscribed': is_subscribed})
+        if user.is_authenticated:
+            is_subscribed = Subscription.objects.filter(
+                user=self.context.get('request').user, following=obj.author
+            ).exists()
+            serializer_data.update({'is_subscribed': is_subscribed})
         return serializer_data
 
 
