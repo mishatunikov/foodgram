@@ -1,6 +1,6 @@
 import io
 
-from django.db.models import Count, Exists, OuterRef, Prefetch
+from django.db.models import Count, Exists, OuterRef, Prefetch, Sum
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
@@ -382,37 +382,22 @@ class RecipeViewSet(ModelViewSet):
         ],
     )
     def download_shopping_cart(self, request):
-        user = request.user
-        user_shopping_cart = user.purchase_list.all().values_list(
-            'recipe_id', flat=True
+        ingredients = (
+            RecipeIngredient.objects.filter(
+                recipe__users_purchase__user=request.user.id
+            )
+            .values('ingredient__name', 'ingredient__measurement_unit')
+            .annotate(total_amount=Sum('amount'))
+            .order_by('-total_amount')
         )
-        queryset = self.get_queryset().filter(id__in=[*user_shopping_cart])
-        ingredients = {}
 
-        for recipe in queryset:
-            for ingredients_amount in recipe.ingredient_amounts:
-                ingredient = ingredients.get(
-                    ingredients_amount.ingredient.name,
-                )
-                if ingredient:
-                    ingredient['amount'] += ingredients_amount.amount
-
-                else:
-                    ingredients[ingredients_amount.ingredient.name] = {
-                        'measurement_unit': (
-                            ingredients_amount.ingredient.measurement_unit
-                        ),
-                        'amount': ingredients_amount.amount,
-                    }
-
-        sorted_ingredients = sorted(
-            ingredients.items(),
-            reverse=True,
-            key=lambda x: x[1]['amount'],
-        )
         list_for_file = [
-            f'• {ing[0]} ({ing[1]["measurement_unit"]}) - {ing[1]["amount"]}'
-            for ing in sorted_ingredients
+            (
+                f'• {ing["ingredient__name"]} '
+                f'({ing["ingredient__measurement_unit"]}) '
+                f'- {ing["total_amount"]}'
+            )
+            for ing in ingredients
         ]
         buffer = io.BytesIO()
         create_pdf(
