@@ -198,12 +198,11 @@ class UserViewSet(
             )
         ).exists():
             return Response(
-                {'message': 'Нет подписки на данного пользователя'},
+                {'message': consts.NO_SUBSCRIPTION},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         subscription.delete()
         return Response(
-            data={'message': consts.SUBSCRIPTION_DELETED},
             status=status.HTTP_204_NO_CONTENT,
         )
 
@@ -218,7 +217,6 @@ class TagViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Обработчик запросов к модели Recipe."""
 
-    queryset = Recipe.objects.all()
     pagination_class = LimitPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilterSet
@@ -237,9 +235,7 @@ class RecipeViewSet(ModelViewSet):
         queryset = Recipe.objects.prefetch_related(
             Prefetch(
                 lookup='recipe_ingredients',
-                queryset=RecipeIngredient.objects.all().select_related(
-                    'ingredient'
-                ),
+                queryset=RecipeIngredient.objects.select_related('ingredient'),
                 to_attr='ingredient_amounts',
             ),
             'tags',
@@ -312,24 +308,22 @@ class RecipeViewSet(ModelViewSet):
         related_model,
         pk,
         request,
-        success_message=consts.DELETE_RELATED_INSTANCE,
         exist_error_message=consts.RELATED_INSTANCE_NOT_EXIST,
     ):
         if not Recipe.objects.filter(pk=pk).exists():
             raise NotFound()
 
-        if not (
-            related_instance := related_model.objects.filter(
-                user=request.user.id, recipe=pk
-            )
-        ).exists():
+        deleted, _ = related_model.objects.filter(
+            user=request.user.id, recipe=pk
+        ).delete()
+
+        if not deleted:
             return Response(
                 {'message': exist_error_message},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        related_instance.delete()
+
         return Response(
-            data={'message': success_message},
             status=status.HTTP_204_NO_CONTENT,
         )
 
@@ -351,7 +345,6 @@ class RecipeViewSet(ModelViewSet):
         return self.delete_related_instance(
             related_model=Favorite,
             pk=pk,
-            success_message=consts.FAVORITE_DELETE,
             exist_error_message=consts.RECIPE_IS_NOT_FAVORITE,
             request=request,
         )
@@ -377,7 +370,6 @@ class RecipeViewSet(ModelViewSet):
             related_model=Purchase,
             pk=pk,
             request=request,
-            success_message=consts.DELETE_SHOPPING_CART_RECIPE,
             exist_error_message=consts.RECIPE_NOT_IN_SHOPPING_CART,
         )
 
