@@ -316,19 +316,16 @@ class RecipeWriteSerializer(RecipeSerializerMixin):
         return recipe
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.pop('name', instance.name)
-        instance.image = validated_data.pop('image', instance.image)
-        instance.text = validated_data.pop('text', instance.text)
-        instance.cooking_time = validated_data.pop(
-            'cooking_time', instance.cooking_time
-        )
-        instance.tags.set(validated_data.pop('tags', instance.tags.all()))
-        ingredients_data = validated_data.pop('ingredients', None)
+        ingredients_data = validated_data.pop('ingredients')
+        instance.tags.set(validated_data.pop('tags'))
+        instance = super().update(instance, validated_data)
+
         if ingredients_data is not None:
             instance.recipe_ingredients.all().delete()
             self.create_recipe_ingredients_relation(
                 recipe=instance, ingredients_data=ingredients_data
             )
+
         instance.save()
         return instance
 
