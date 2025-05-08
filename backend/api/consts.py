@@ -29,6 +29,7 @@ RECIPE_INGREDIENTS_DUPLICATED = (
 )
 RECIPE_TAGS_DUPLICATED = 'В рецепте не могут быть указаны повторяющиеся теги.'
 RECIPE_UPDATE_REQUIRED_FIELDS = 'Не указаны обязательные поля'
+INGREDIENT_DO_NOT_EXIST = 'Ингредиент с указанным id не найден.'
 
 # Patterns
 RECIPES_LIMIT_PARAM_PATTERN = r'[1-9]+\d*'

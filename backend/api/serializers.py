@@ -254,7 +254,7 @@ class RecipeIngredientWriteSerializer(serializers.Serializer):
         ingredient = Ingredient.objects.filter(id=input_id)
         if ingredient.exists():
             return input_id
-        raise ValidationError(detail='Ингредиент с указанным id не найден.')
+        raise ValidationError(detail=consts.INGREDIENT_DO_NOT_EXIST)
 
 
 class RecipeWriteSerializer(RecipeSerializerMixin):
