@@ -169,9 +169,6 @@ class UserViewSet(
     )
     def subscribe(self, request, pk):
 
-        if not User.objects.filter(id=pk).exists():
-            raise NotFound()
-
         serializer = SubscriptionSerializer(
             data={'user': request.user.id, 'following': pk},
             context={'request': self.request},
