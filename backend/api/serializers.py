@@ -58,9 +58,6 @@ class UserWriteSerializer(serializers.ModelSerializer):
     def get_request(self):
         return self.context.get('request')
 
-    def validate(self, attrs):
-        return super().validate(attrs)
-
     def create(self, validated_data):
         password = validated_data.pop('password')
         instance = User(**validated_data)
