@@ -430,7 +430,7 @@ class RecipeViewSet(ModelViewSet):
         )
 
 
-class IngredientViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+class IngredientViewSet(ReadOnlyModelViewSet):
     """Обработчик запросов к данным об ингредиентах."""
 
     queryset = Ingredient.objects.all()
