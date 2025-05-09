@@ -58,11 +58,11 @@ INTERNAL_IPS = [
 ]
 
 ROOT_URLCONF = 'api_foodgram.urls'
-
+TEMPLATE_DIR = BASE_DIR / 'templates'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,7 +96,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'db.sqlite3',
+            'NAME': 'data/db.sqlite3',
         }
     }
 
