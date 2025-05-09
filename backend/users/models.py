@@ -17,7 +17,7 @@ class CustomUser(AbstractUser):
     avatar = models.ImageField(
         upload_to='avatars',
         null=True,
-        default=None,
+        default='',
         blank=True,
         verbose_name='аватар',
     )
