@@ -9,6 +9,7 @@ class DjangoSettings:
 
     secret_key: str
     debug: bool
+    db_prod: bool
 
 
 @dataclass
@@ -45,6 +46,7 @@ def load_env() -> Config:
     return Config(
         DjangoSettings(
             secret_key=env.str('SECRET_KEY', 'SECRET_KEY'),
+            db_prod=env.bool('DB_PROD'),
             debug=env.bool('DEBUG'),
         ),
         PostgreSettings(
