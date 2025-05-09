@@ -50,10 +50,10 @@ from foodgram.models import (
     Purchase,
     Recipe,
     RecipeIngredient,
-    Subscription,
     Tag,
     User,
 )
+from users.models import Subscription
 
 
 class UserViewSet(

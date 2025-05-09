@@ -8,9 +8,6 @@ HTTP_STARTSWITH = 'http://'
 SHORT_URL_ENDPOINT = 's'
 
 ADMIN_PANEL_MAX_WORDS = 10
-SUBSCRIPTION_STR = (
-    lambda subscriber, subscription: f'Подписка {subscriber} на {subscription}'
-)
 
 MIN_AMOUNT_INGREDIENT = 1
 MAX_AMOUNT_INGREDIENT = 10_000

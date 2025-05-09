@@ -8,7 +8,6 @@ from foodgram.models import (
     Ingredient,
     Purchase,
     Recipe,
-    Subscription,
     Tag,
 )
 
@@ -172,20 +171,3 @@ class FavoriteAdmin(FavoritePurchaseMixin):
 @admin.register(Purchase)
 class PurchaseAdmin(FavoritePurchaseMixin):
     """Модель покупок в админке."""
-
-
-@admin.register(Subscription)
-class SubscriptionAdmin(admin.ModelAdmin):
-    """Модель подписок в админке."""
-
-    list_display = ('description', 'user', 'following')
-    search_fields = ('user__username', 'following__username')
-
-    @admin.display(description='описание')
-    def description(self, obj):
-        return str(obj)
-
-    def get_queryset(self, request):
-        return (
-            super().get_queryset(request).select_related('user', 'following')
-        )

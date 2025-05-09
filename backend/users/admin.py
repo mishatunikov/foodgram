@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from foodgram.models import Favorite, Purchase, Recipe, Subscription
-from users.models import CustomUser
+from foodgram.models import Favorite, Purchase, Recipe
+from users.models import CustomUser, Subscription
 
 
 class FavoriteInline(admin.TabularInline):
@@ -80,6 +80,23 @@ class CustomAdmin(UserAdmin):
     @admin.display(description='юзернейм', ordering='username')
     def user_username(self, obj):
         return obj.username
+
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    """Модель подписок в админке."""
+
+    list_display = ('description', 'user', 'following')
+    search_fields = ('user__username', 'following__username')
+
+    @admin.display(description='описание')
+    def description(self, obj):
+        return str(obj)
+
+    def get_queryset(self, request):
+        return (
+            super().get_queryset(request).select_related('user', 'following')
+        )
 
 
 CustomAdmin.fieldsets += (('Extra Fields', {'fields': ('avatar',)}),)
