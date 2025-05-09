@@ -130,7 +130,11 @@ class Recipe(BaseCreatedAt, BaseName):
     )
     tags = ManyToManyField(Tag, verbose_name='Теги', related_name='recipes')
     cooking_time = models.PositiveSmallIntegerField(
-        verbose_name='Время готовки', validators=[MinValueValidator(1)]
+        verbose_name='Время готовки',
+        validators=[
+            MinValueValidator(consts.MIN_COOKING_TIME),
+            MaxValueValidator(consts.MAX_COOKING_TIME),
+        ],
     )
     short_link_id = models.CharField(
         unique=True,
