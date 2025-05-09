@@ -1,6 +1,6 @@
 from config import config
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import ManyToManyField
 
@@ -91,7 +91,13 @@ class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.CASCADE, verbose_name='ингредиент'
     )
-    amount = models.PositiveSmallIntegerField(verbose_name='Количество')
+    amount = models.PositiveSmallIntegerField(
+        verbose_name='Количество',
+        validators=[
+            MinValueValidator(consts.MIN_AMOUNT_INGREDIENT),
+            MaxValueValidator(consts.MAX_AMOUNT_INGREDIENT),
+        ],
+    )
     recipe = models.ForeignKey(
         'Recipe',
         on_delete=models.CASCADE,
@@ -101,6 +107,12 @@ class RecipeIngredient(models.Model):
         default_related_name = 'recipe_ingredients'
         verbose_name = 'ингредиент рецепта'
         verbose_name_plural = 'Ингредиенты рецепта'
+        constrains = [
+            models.UniqueConstraint(
+                fields=['ingredient', 'recipe'],
+                name='unique_ingredient_recipe',
+            )
+        ]
 
 
 class Recipe(BaseCreatedAt, BaseName):
