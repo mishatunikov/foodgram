@@ -95,17 +95,6 @@ class TagAdmin(admin.ModelAdmin):
 
 class IngredientRecipeInline(IngredientRecipeInlineMixin):
 
-    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        if db_field.name == 'ingredient':
-            formfield = super().formfield_for_foreignkey(
-                db_field, request, **kwargs
-            )
-            formfield.label_from_instance = (
-                lambda obj: f'{obj.name} ({obj.measurement_unit})'
-            )
-            return formfield
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
     def get_queryset(self, request):
         queryset = super().get_queryset(request).select_related('ingredient')
         return queryset
