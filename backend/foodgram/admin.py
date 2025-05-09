@@ -3,13 +3,7 @@ from django.db.models import Count, F, Value
 from django.db.models.functions import Concat
 
 from foodgram import consts
-from foodgram.models import (
-    Favorite,
-    Ingredient,
-    Purchase,
-    Recipe,
-    Tag,
-)
+from foodgram.models import Favorite, Ingredient, Purchase, Recipe, Tag
 
 
 class IngredientRecipeInlineMixin(admin.TabularInline):
