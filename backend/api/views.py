@@ -258,30 +258,6 @@ class RecipeViewSet(ModelViewSet):
             )
         return queryset
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        object_with_info = self.get_queryset().get(id=serializer.instance.id)
-        read_serializer = RecipeReadSerializer(
-            object_with_info, context=self.get_serializer_context()
-        )
-        return Response(read_serializer.data, status=status.HTTP_201_CREATED)
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=partial
-        )
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        read_serializer = RecipeReadSerializer(
-            self.get_queryset().get(id=instance.id),
-            context=self.get_serializer_context(),
-        )
-        return Response(read_serializer.data, status=status.HTTP_200_OK)
-
     @action(
         methods=['get'],
         detail=True,

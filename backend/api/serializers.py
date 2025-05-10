@@ -299,6 +299,12 @@ class RecipeWriteSerializer(RecipeSerializerMixin):
                 )
         return attrs
 
+    def to_representation(self, instance):
+        view = self.context.get('view')
+        return RecipeReadSerializer(
+            view.get_queryset().get(id=instance.id), context=self.context
+        ).data
+
     def create(self, validated_data):
         tags = validated_data.pop('tags')
 
