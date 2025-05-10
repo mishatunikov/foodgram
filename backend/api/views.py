@@ -174,7 +174,10 @@ class UserViewSet(
     def subscribe(self, request, pk):
 
         serializer = SubscriptionSerializer(
-            data={'user': request.user.id, 'following': pk},
+            data={
+                'user': request.user.id,
+                'following': get_object_or_404(User, pk=pk).id,
+            },
             context={'request': self.request},
         )
         serializer.is_valid(raise_exception=True)
