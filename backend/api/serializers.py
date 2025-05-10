@@ -169,9 +169,6 @@ class TagSerializer(serializers.ModelSerializer):
 class RecipeSerializerMixin(serializers.ModelSerializer):
     """Миксин с базовым набором для работы с моделью Recipe."""
 
-    # author = UserReadSerializer(
-    #     read_only=True,
-    # )
     author = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -333,14 +330,14 @@ class RecipeWriteSerializer(RecipeSerializerMixin):
         recipe: Recipe, ingredients_data: dict
     ):
         RecipeIngredient.objects.bulk_create(
-            [
+            (
                 RecipeIngredient(
                     ingredient_id=ingredient_data.get('id'),
                     recipe=recipe,
                     amount=ingredient_data['amount'],
                 )
                 for ingredient_data in ingredients_data
-            ]
+            )
         )
 
 
